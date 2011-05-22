@@ -26,7 +26,7 @@ public class FileManagerKernerEnterPoint {
 
 	boolean exitFlag = true;
 	File[] fileList;
-	Object[] data;
+	final String[] data;
 
 	FileManagerKernerEnterPoint() {
 
@@ -39,7 +39,7 @@ public class FileManagerKernerEnterPoint {
 		jFrm.setSize(300, 200);
 		jFrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		data = new Object[fileList.length];
+		data = new String[fileList.length];
 		for (int i = 0; i < fileList.length; i++) {
 			data[i] = fileList[i].getPath();
 		}
@@ -59,10 +59,9 @@ public class FileManagerKernerEnterPoint {
 				}
 
 				fileList = fm.createFileList((String) data[idx]);
-				data = new Object[fileList.length];
 				for (int i = 0; i < fileList.length - 1; i++) {
 					modelList.putElement(fileList[i].getAbsoluteFile());
-			//		System.out.println(fileList[i].getPath());
+					// System.out.println(fileList[i].getPath());
 				}
 
 				jList.removeAll();
@@ -83,7 +82,6 @@ public class FileManagerKernerEnterPoint {
 
 		jBtnBuy.addActionListener(new ActionListener() {
 
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				exitFlag = false;
 				System.exit(0);
