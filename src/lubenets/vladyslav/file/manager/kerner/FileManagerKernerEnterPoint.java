@@ -31,6 +31,8 @@ public class FileManagerKernerEnterPoint {
 	FileManagerKernerEnterPoint() {
 
 		final ListForModel modelList = new ListForModel();
+		modelList.setFactory(new RedLabelFileViewFactory());
+
 		fileList = File.listRoots();
 		final FileManager fm = new FileManagerImpl();
 		final JFrame jFrm = new JFrame("Simple file manager");
