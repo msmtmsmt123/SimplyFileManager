@@ -1,4 +1,4 @@
-package lubenets.vladyslav.file.manager.kerner;
+package lubenets.vladyslav.file.manager.view;
 
 import java.io.File;
 

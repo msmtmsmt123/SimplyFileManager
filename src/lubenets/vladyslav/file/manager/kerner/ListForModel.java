@@ -9,12 +9,16 @@ import java.util.Vector;
 import javax.swing.AbstractListModel;
 import javax.swing.JOptionPane;
 
+import lubenets.vladyslav.file.manager.labels.LabelFileViewFactory;
+import lubenets.vladyslav.file.manager.view.FileView;
+import lubenets.vladyslav.file.manager.view.FileViewFactory;
+
 @SuppressWarnings("serial")
 public class ListForModel extends AbstractListModel {
 
 	private FileViewFactory factory = new LabelFileViewFactory();
 
-	private Vector<File> files = new Vector<File>();
+	Vector<File> files = new Vector<File>();
 
 	public FileViewFactory getFactory() {
 		return factory;
@@ -43,10 +47,11 @@ public class ListForModel extends AbstractListModel {
 
 		fileView.setData(data);
 
-		result.setBounds(0, index * 50, 200, 50);
+
 		result.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				System.out.println(data.getAbsolutePath());
 				JOptionPane.showMessageDialog(result, data.getAbsolutePath());
 			}
 		});

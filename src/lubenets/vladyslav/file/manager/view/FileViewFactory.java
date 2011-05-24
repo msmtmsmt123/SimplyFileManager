@@ -1,4 +1,5 @@
-package lubenets.vladyslav.file.manager.kerner;
+package lubenets.vladyslav.file.manager.view;
+
 
 public interface FileViewFactory {
 

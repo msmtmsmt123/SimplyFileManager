@@ -1,10 +1,10 @@
-package lubenets.vladyslav.file.manager.kerner;
+package lubenets.vladyslav.file.manager.labels;
 
 import java.awt.Color;
 import java.io.File;
 
-import lubenets.vladyslav.file.manager.kerner.LabelFileView;
 
+@SuppressWarnings("serial")
 public class RedLabelFileView extends LabelFileView {
 
 	@Override

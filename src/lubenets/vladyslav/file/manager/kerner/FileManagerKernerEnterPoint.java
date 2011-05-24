@@ -7,22 +7,25 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import lubenets.vladyslav.file.manager.labels.RedLabelFileViewFactory;
 
 public class FileManagerKernerEnterPoint {
 
 	JList jList;
 	JLabel jLable;
 	JScrollPane jscrlp;
-	JButton jBtnBuy;
+	JButton jBtnBye;
 
 	boolean exitFlag = true;
 	File[] fileList;
@@ -30,8 +33,6 @@ public class FileManagerKernerEnterPoint {
 
 	FileManagerKernerEnterPoint() {
 
-		final ListForModel modelList = new ListForModel();
-		modelList.setFactory(new RedLabelFileViewFactory());
 
 		fileList = File.listRoots();
 		final FileManager fm = new FileManagerImpl();
@@ -41,48 +42,76 @@ public class FileManagerKernerEnterPoint {
 		jFrm.setSize(300, 200);
 		jFrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+		final DefaultListModel lm = new DefaultListModel();
+
 		data = new String[fileList.length];
 		for (int i = 0; i < fileList.length; i++) {
 			data[i] = fileList[i].getPath();
+			lm.add(i, data[i]);
 		}
 
-		jList = new JList(data);
+		jList = new JList(lm);
 		jList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		jscrlp = new JScrollPane(jList);
-		jscrlp.setPreferredSize(new Dimension(120, 90));
-		jLable = new JLabel("Select an item");
+		jscrlp.setPreferredSize(new Dimension(300, 200));
 
 		jList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
-				int idx = 0;
-				idx = jList.getSelectedIndex();
+
+				final ListForModel modelList = new ListForModel();
+				modelList.setFactory(new RedLabelFileViewFactory());
+
+				Object value[] = jList.getSelectedValues();
+
+				int idx = jList.getSelectedIndex();
+
 				if (idx == -1) {
 					return;
 				}
 
-				fileList = fm.createFileList((String) data[idx]);
+				fileList = fm.createFileList((String) value[0]);
+
+				if (idx == 0) {
+					if (!value[0].equals("/")) {
+						int decPosition = value[0].toString().lastIndexOf("/");
+						System.out.println(value[0].toString().substring(0, decPosition));
+						fileList = fm.createFileList(value[0].toString().substring(0, decPosition));
+					}
+				}
+				
+				DefaultListModel lm = (DefaultListModel) jList.getModel();
+				System.out.println(lm.getSize());
+				lm.clear();
+				System.out.println(lm.getSize());
+
+				lm.addElement("..");
+				
+				if (fileList==null) {
+					JOptionPane.showMessageDialog(jFrm, "Access denied!");
+					return;
+				}
+				
 				for (int i = 0; i < fileList.length - 1; i++) {
 					modelList.putElement(fileList[i].getAbsoluteFile());
-					// System.out.println(fileList[i].getPath());
 				}
 
-				jList.removeAll();
+
 				for (int j = 0; j < modelList.getSize() - 1; j++) {
-					jList.add(modelList.getElementAt(j));
-					System.out.println(modelList.getElementAt(j));
-				}
+					String analysis = modelList.getElementAt(j).toString();
+					int indexNumber = analysis.indexOf("text=");
+					String afterAnalysis = analysis.substring(indexNumber + 5,
+							analysis.length() - 1);
 
-				// jList = new JList(data);
-				// jList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-				// jscrlp = new JScrollPane(jList);
-				// jFrm.getContentPane().add(jscrlp, FlowLayout.LEFT);
+					System.out.println(afterAnalysis);
+					lm.addElement(afterAnalysis);
+				}
 
 			}
 		});
 
-		jBtnBuy = new JButton("Exit");
+		jBtnBye = new JButton("Exit");
 
-		jBtnBuy.addActionListener(new ActionListener() {
+		jBtnBye.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				exitFlag = false;
@@ -91,18 +120,14 @@ public class FileManagerKernerEnterPoint {
 		});
 
 		jFrm.getContentPane().add(jscrlp, FlowLayout.LEFT);
-		jFrm.getContentPane().add(jBtnBuy, BorderLayout.AFTER_LAST_LINE);
+		jFrm.getContentPane().add(jBtnBye, BorderLayout.AFTER_LAST_LINE);
 
 		jFrm.setVisible(true);
 
 	}
 
 	public static void main(String[] str) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				new FileManagerKernerEnterPoint();
-			}
-		});
+		new FileManagerKernerEnterPoint();
 	}
 
 }
