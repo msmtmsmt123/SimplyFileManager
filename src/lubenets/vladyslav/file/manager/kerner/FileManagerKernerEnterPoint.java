@@ -30,9 +30,9 @@ public class FileManagerKernerEnterPoint {
 	boolean exitFlag = true;
 	File[] fileList;
 	final String[] data;
+	String backStep;
 
 	FileManagerKernerEnterPoint() {
-
 
 		fileList = File.listRoots();
 		final FileManager fm = new FileManagerImpl();
@@ -61,6 +61,8 @@ public class FileManagerKernerEnterPoint {
 				final ListForModel modelList = new ListForModel();
 				modelList.setFactory(new RedLabelFileViewFactory());
 
+
+
 				Object value[] = jList.getSelectedValues();
 
 				int idx = jList.getSelectedIndex();
@@ -69,32 +71,40 @@ public class FileManagerKernerEnterPoint {
 					return;
 				}
 
+				if (!value[0].equals("..")) {
+					backStep = (String) value[0];
+				}
+
 				fileList = fm.createFileList((String) value[0]);
 
 				if (idx == 0) {
 					if (!value[0].equals("/")) {
-						int decPosition = value[0].toString().lastIndexOf("/");
-						System.out.println(value[0].toString().substring(0, decPosition));
-						fileList = fm.createFileList(value[0].toString().substring(0, decPosition));
+						int decPosition = backStep.lastIndexOf("/");
+						if (decPosition == 0) {
+							backStep = backStep.substring(0, decPosition+1);
+						} else
+						backStep = backStep.substring(0, decPosition);
+
+						System.out.println(backStep);
+						fileList = fm.createFileList(backStep);
 					}
 				}
-				
+
 				DefaultListModel lm = (DefaultListModel) jList.getModel();
-				System.out.println(lm.getSize());
+//				System.out.println(lm.getSize());
 				lm.clear();
-				System.out.println(lm.getSize());
+//				System.out.println(lm.getSize());
 
 				lm.addElement("..");
-				
-				if (fileList==null) {
+
+				if (fileList == null) {
 					JOptionPane.showMessageDialog(jFrm, "Access denied!");
 					return;
 				}
-				
+
 				for (int i = 0; i < fileList.length - 1; i++) {
 					modelList.putElement(fileList[i].getAbsoluteFile());
 				}
-
 
 				for (int j = 0; j < modelList.getSize() - 1; j++) {
 					String analysis = modelList.getElementAt(j).toString();
