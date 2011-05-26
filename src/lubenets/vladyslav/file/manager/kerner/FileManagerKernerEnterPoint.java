@@ -31,6 +31,8 @@ public class FileManagerKernerEnterPoint {
 	File[] fileList;
 	final String[] data;
 	String backStep;
+	
+	private static final String REGEXP_FOR_FILE_DETECTING = "";
 
 	FileManagerKernerEnterPoint() {
 
@@ -102,11 +104,11 @@ public class FileManagerKernerEnterPoint {
 					return;
 				}
 
-				for (int i = 0; i < fileList.length - 1; i++) {
+				for (int i = 0; i < fileList.length; i++) {
 					modelList.putElement(fileList[i].getAbsoluteFile());
 				}
 
-				for (int j = 0; j < modelList.getSize() - 1; j++) {
+				for (int j = 0; j < modelList.getSize(); j++) {
 					String analysis = modelList.getElementAt(j).toString();
 					int indexNumber = analysis.indexOf("text=");
 					String afterAnalysis = analysis.substring(indexNumber + 5,
