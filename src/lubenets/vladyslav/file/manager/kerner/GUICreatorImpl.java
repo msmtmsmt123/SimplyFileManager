@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -25,22 +26,21 @@ import lubenets.vladyslav.file.manager.labels.RedLabelFileViewFactory;
 
 public class GUICreatorImpl implements GUICreator {
 
-	JList jList;
-	JLabel jLable;
-	JScrollPane jscrlp;
-	JButton jBtnBye;
+	public JList jList;
+	public JLabel jLable;
+	public JScrollPane jscrlp;
+	public JButton jBtnBye;
 
-	boolean exitFlag = true;
-	File[] fileList;
-	final String[] data;
-	String backStep;
-	String path = "";
-
-//	private static final String REGEXP_FOR_FILE_DETECTING = "[*]{0,}\\.[*]{0,}";
+	public boolean exitFlag = true;
+	public File[] fileList;
+	public String[] data;
+	public String backStep;
+	public String path = "";
+	public DefaultListModel lm;
 
 	GUICreatorImpl() {
 
-		fileList = File.listRoots();
+		lm = new DefaultListModel();
 		final FileManager fm = new FileManagerImpl();
 		final JFrame jFrm = new JFrame("Simple file manager");
 
@@ -49,18 +49,14 @@ public class GUICreatorImpl implements GUICreator {
 		jFrm.setSize(300, 200);
 		jFrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		final DefaultListModel lm = new DefaultListModel();
-
-		data = new String[fileList.length];
-		for (int i = 0; i < fileList.length; i++) {
-			data[i] = fileList[i].getPath();
-			lm.add(i, data[i]);
-		}
+		StartDataLoader startDataLoader = new StartDataLoaderImpl();
+		startDataLoader.loadInformation(this);
 
 		jList = new JList(lm);
 		jList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		jscrlp = new JScrollPane(jList);
-		jscrlp.setPreferredSize(new Dimension(300, 200));
+		jscrlp.setPreferredSize(new Dimension(800, 600));
+		
 
 		jList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
@@ -68,7 +64,9 @@ public class GUICreatorImpl implements GUICreator {
 				final ListForModel modelList = new ListForModel();
 				modelList.setFactory(new RedLabelFileViewFactory());
 
-				// Vector<Object> valueClone = new Vector<Object>();
+				ListModelFilling listModelFilling = new ListModelFillingImpl();
+				listModelFilling.getData(this);
+
 				SortedSet<String> folders = new TreeSet<String>();
 				SortedSet<String> files = new TreeSet<String>();
 
@@ -79,7 +77,7 @@ public class GUICreatorImpl implements GUICreator {
 				}
 
 				Object value = jList.getSelectedValues()[0];
-				String fullPath = path + "/" + value.toString();
+				String fullPath = path + File.separator + value.toString();
 				if (value.toString().equals("..")) {
 					fullPath = value.toString();
 				}
@@ -91,14 +89,14 @@ public class GUICreatorImpl implements GUICreator {
 				fileList = fm.createFileList((String) fullPath);
 
 				if (idx == 0) {
-					if (!fullPath.equals("/")) {
-						int decPosition = backStep.lastIndexOf("/");
+					if (!fullPath.equals(File.separator)) {
+						int decPosition = backStep.lastIndexOf(File.separator);
 						if (decPosition == 0) {
 							backStep = backStep.substring(0, decPosition + 1);
 						} else
 							backStep = backStep.substring(0, decPosition);
 
-						System.out.println(backStep);
+						// System.out.println(backStep);
 						fileList = fm.createFileList(backStep);
 					}
 				}
@@ -108,60 +106,78 @@ public class GUICreatorImpl implements GUICreator {
 
 				lm.addElement("..");
 
-				if (fileList == null) {
-					JOptionPane.showMessageDialog(jFrm, "Access denied!");
-					return;
-				}
+				if (fileList != null) {
 
-				for (int i = 0; i < fileList.length; i++) {
-					modelList.putElement(fileList[i].getAbsoluteFile());
-				}
-
-				for (int j = 0; j < modelList.getSize(); j++) {
-					String analysis = modelList.getElementAt(j).toString();
-					int indexNumber = analysis.indexOf("text=");
-					String afterAnalysis = analysis.substring(indexNumber + 5,
-							analysis.length() - 1);
-
-					path = afterAnalysis.substring(0,
-							afterAnalysis.lastIndexOf('/'));
-
-					if (afterAnalysis.lastIndexOf('/') == 0) {
-						path = "/";
+					for (int i = 0; i < fileList.length; i++) {
+						modelList.putElement(fileList[i].getAbsoluteFile());
 					}
 
-					jFrm.setTitle(path);
+					for (int j = 0; j < modelList.getSize(); j++) {
+						String analysis = modelList.getElementAt(j).toString();
+						int indexNumber = analysis.indexOf("text=");
+						String afterAnalysis = analysis.substring(
+								indexNumber + 5, analysis.length() - 1);
 
-					String output = afterAnalysis.substring(
-							afterAnalysis.lastIndexOf('/') + 1,
-							afterAnalysis.length());
+						path = afterAnalysis.substring(0,
+								afterAnalysis.lastIndexOf(File.separator));
+
+						if (afterAnalysis.lastIndexOf(File.separator) == 0) {
+							path = File.separator;
+						}
+
+						jFrm.setTitle(path);
+
+
+						String output = afterAnalysis.substring(
+								afterAnalysis.lastIndexOf(File.separator) + 1,
+								afterAnalysis.length());
+
+						File fileType = new File(path + File.separator + output);
+						if (fileType.isFile()) {
+							files.add(output);
+						} else
+							folders.add(output);
+
+					}
+
+					Iterator<String> iteratorForFolders = folders.iterator();
+					Iterator<String> iteratorForFiles = files.iterator();
+
+					for (int i = 0; i < folders.size(); i++) {
+						if (iteratorForFolders.hasNext()) {
+							lm.addElement(iteratorForFolders.next());
+						}
+					}
+
+					for (int i = 0; i < files.size(); i++) {
+						if (iteratorForFiles.hasNext()) {
+							lm.addElement(iteratorForFiles.next());
+						}
+					}
+
+				}
+
+				if (fileList == null) {
+					String response = JOptionPane
+							.showInputDialog("Enter a program name to open file");
+					if (response == null || response.length() == 0) {
+						return;
+					}
 
 					
-					File fileType = new File(path + File.separator + output);
-					if (fileType.isFile()) {
-						files.add(output);
-					} else
-						folders.add(output);
-
-
-				}
-				
-				Iterator<String> iteratorForFolders = folders.iterator();
-				Iterator<String> iteratorForFiles = files.iterator();
-
-				for (int i = 0; i < folders.size(); i++) {
-					if (iteratorForFolders.hasNext()) {
-						lm.addElement(iteratorForFolders.next());
+					Runtime r = Runtime.getRuntime();
+					String parameters[]={response, path + File.separator + value};
+					
+					try {
+						r.exec(parameters);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
+					
+					
+					
 				}
-
-				for (int i = 0; i < files.size(); i++) {
-					if (iteratorForFiles.hasNext()) {
-						lm.addElement(iteratorForFiles.next());
-					}
-				}
-				
-
 			}
 		});
 
