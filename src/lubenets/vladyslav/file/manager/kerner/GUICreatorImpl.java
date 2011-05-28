@@ -6,7 +6,10 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -16,13 +19,18 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import lubenets.vladyslav.file.manager.labels.RedLabelFileViewFactory;
+import lubenets.vladyslav.file.manager.last.command.FileAssosiationDetecter;
+import lubenets.vladyslav.file.manager.last.command.FileAssosoationDetectorImpl;
+import lubenets.vladyslav.file.manager.open.file.OpenFileModule;
+import lubenets.vladyslav.file.manager.open.file.OpenFileModuleImpl;
+import lubenets.vladyslav.file.manager.start.data.loader.StartDataLoader;
+import lubenets.vladyslav.file.manager.start.data.loader.StartDataLoaderImpl;
 
 public class GUICreatorImpl implements GUICreator {
 
@@ -37,8 +45,31 @@ public class GUICreatorImpl implements GUICreator {
 	public String backStep;
 	public String path = "";
 	public DefaultListModel lm;
+	public FileAssosiationDetecter fad;
 
 	GUICreatorImpl() {
+		fad = new FileAssosoationDetectorImpl();
+		
+		File file = new File(OpenFileModule.FILE_ASSOSIATION_CFG);
+
+		if (file.exists()) {
+			try {
+
+				FileInputStream fis = new FileInputStream(OpenFileModule.FILE_ASSOSIATION_CFG);
+				ObjectInputStream ois = new ObjectInputStream(fis);
+				fad = (FileAssosiationDetecter) ois.readObject();
+				ois.close();
+
+			} catch (FileNotFoundException e1) {
+				return;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
 		lm = new DefaultListModel();
 		final FileManager fm = new FileManagerImpl();
@@ -46,7 +77,7 @@ public class GUICreatorImpl implements GUICreator {
 
 		jFrm.getContentPane().setLayout(new FlowLayout());
 		jFrm.getContentPane().setLayout(new BorderLayout());
-		jFrm.setSize(300, 200);
+		jFrm.setSize(1200, 700);
 		jFrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		StartDataLoader startDataLoader = new StartDataLoaderImpl();
@@ -55,8 +86,7 @@ public class GUICreatorImpl implements GUICreator {
 		jList = new JList(lm);
 		jList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		jscrlp = new JScrollPane(jList);
-		jscrlp.setPreferredSize(new Dimension(800, 600));
-		
+		jscrlp.setPreferredSize(new Dimension(700, 500));
 
 		jList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
@@ -102,9 +132,11 @@ public class GUICreatorImpl implements GUICreator {
 				}
 
 				DefaultListModel lm = (DefaultListModel) jList.getModel();
-				lm.clear();
 
-				lm.addElement("..");
+				if (fileList != null) {
+					lm.clear();
+					lm.addElement("..");
+				}
 
 				if (fileList != null) {
 
@@ -126,7 +158,6 @@ public class GUICreatorImpl implements GUICreator {
 						}
 
 						jFrm.setTitle(path);
-
 
 						String output = afterAnalysis.substring(
 								afterAnalysis.lastIndexOf(File.separator) + 1,
@@ -158,25 +189,12 @@ public class GUICreatorImpl implements GUICreator {
 				}
 
 				if (fileList == null) {
-					String response = JOptionPane
-							.showInputDialog("Enter a program name to open file");
-					if (response == null || response.length() == 0) {
-						return;
-					}
 
-					
-					Runtime r = Runtime.getRuntime();
-					String parameters[]={response, path + File.separator + value};
-					
-					try {
-						r.exec(parameters);
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					
-					
-					
+					String fileToOpen = path + File.separator + value;
+
+					OpenFileModule openFile = new OpenFileModuleImpl();
+					openFile.openThis(fad, fileToOpen, value);
+
 				}
 			}
 		});
