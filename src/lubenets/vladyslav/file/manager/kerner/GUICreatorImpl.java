@@ -5,6 +5,9 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -19,8 +22,11 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -46,16 +52,41 @@ public class GUICreatorImpl implements GUICreator {
 	public String path = "";
 	public DefaultListModel lm;
 	public FileAssosiationDetecter fad;
+	DataToShare dataToShare;
+	
+	// public RightMouseMenu rmm;
+	JPopupMenu jpu;
 
 	GUICreatorImpl() {
+
+		dataToShare = new DataToShareImpl();
+		final JFrame jFrm = new JFrame("Simple file manager");
+
+		jpu = new JPopupMenu();
+		final JMenuItem jmiOpen = new JMenuItem("Open with...");
+		final JMenuItem jmiCopy = new JMenuItem("Copy");
+		final JMenuItem jmiRenameMove = new JMenuItem("Rename/Move");
+		final JMenuItem jmiDelete = new JMenuItem("Delete");
+		final JMenuItem jmiProperties = new JMenuItem("Properties");
+
+		jpu.add(jmiOpen);
+		jpu.add(jmiCopy);
+		jpu.add(jmiRenameMove);
+		jpu.add(jmiDelete);
+		jpu.add(jmiProperties);
+
+		// rmm = new RightMouseMenuImpl();
+		// rmm.activate(jList);
+
 		fad = new FileAssosoationDetectorImpl();
-		
+
 		File file = new File(OpenFileModule.FILE_ASSOSIATION_CFG);
 
 		if (file.exists()) {
 			try {
 
-				FileInputStream fis = new FileInputStream(OpenFileModule.FILE_ASSOSIATION_CFG);
+				FileInputStream fis = new FileInputStream(
+						OpenFileModule.FILE_ASSOSIATION_CFG);
 				ObjectInputStream ois = new ObjectInputStream(fis);
 				fad = (FileAssosiationDetecter) ois.readObject();
 				ois.close();
@@ -73,7 +104,6 @@ public class GUICreatorImpl implements GUICreator {
 
 		lm = new DefaultListModel();
 		final FileManager fm = new FileManagerImpl();
-		final JFrame jFrm = new JFrame("Simple file manager");
 
 		jFrm.getContentPane().setLayout(new FlowLayout());
 		jFrm.getContentPane().setLayout(new BorderLayout());
@@ -84,7 +114,7 @@ public class GUICreatorImpl implements GUICreator {
 		startDataLoader.loadInformation(this);
 
 		jList = new JList(lm);
-		jList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		jList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		jscrlp = new JScrollPane(jList);
 		jscrlp.setPreferredSize(new Dimension(700, 500));
 
@@ -213,6 +243,98 @@ public class GUICreatorImpl implements GUICreator {
 		jFrm.getContentPane().add(jBtnBye, BorderLayout.AFTER_LAST_LINE);
 
 		jFrm.setVisible(true);
+
+
+		
+		
+		jList.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				check(e);
+			}
+
+			public void mouseReleased(MouseEvent e) {
+				check(e);
+			}
+
+			public void check(MouseEvent e) {
+				if (SwingUtilities.isRightMouseButton(e)) {
+
+					if (e.isPopupTrigger()) {
+						// jList.setSelectedIndex(jList.locationToIndex(e.getPoint()));
+//						dataToShare = jList.locationToIndex(e.getPoint());
+			//			System.out.println(selectedItem);
+						jpu.show(jList, e.getX(), e.getY());
+					}
+				}
+				// }
+
+				// jpu.show(jList, me.getX(), me.getY());
+				// System.out.println(jList
+				// .getSelectedIndex());
+				// }
+				//
+				// if (me.isPopupTrigger())
+				// jpu.show(me.getComponent(), me.getX(), me.getY());
+				//
+				// System.out.println(jList.getSelectedIndex());
+				//
+
+				MouseListener listenerForOpen = new MouseListener() {
+
+					@Override
+					public void mouseReleased(MouseEvent e) {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void mousePressed(MouseEvent e) {
+
+						File file = new File((String) lm.get(jList
+								.locationToIndex(e.getPoint())));
+						if (file.isFile()) {
+							System.out.println(dataToShare);						
+//							System.out.println((String) lm.get(jList
+//									.locationToIndex(e.getPoint())));
+						}
+
+						if (file.isDirectory()) {
+
+							System.out.println(jList.getSelectedIndex());
+						}
+
+					}
+
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void mouseEntered(MouseEvent e) {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void mouseExited(MouseEvent e) {
+						// TODO Auto-generated method stub
+
+					}
+
+				};
+
+				jmiOpen.addMouseListener(listenerForOpen);
+
+				jmiCopy.addMouseListener(this);
+				jmiRenameMove.addMouseListener(this);
+				jmiDelete.addMouseListener(this);
+				jmiProperties.addMouseListener(this);
+
+			}
+
+		});
 
 	}
 
