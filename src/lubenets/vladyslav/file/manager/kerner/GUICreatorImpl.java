@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -17,16 +16,19 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -38,7 +40,9 @@ import lubenets.vladyslav.file.manager.open.file.OpenFileModuleImpl;
 import lubenets.vladyslav.file.manager.start.data.loader.StartDataLoader;
 import lubenets.vladyslav.file.manager.start.data.loader.StartDataLoaderImpl;
 
-public class GUICreatorImpl implements GUICreator {
+@SuppressWarnings("serial")
+public class GUICreatorImpl extends JPanel implements ListSelectionListener,
+		GUICreator {
 
 	public JList jList;
 	public JLabel jLable;
@@ -52,16 +56,27 @@ public class GUICreatorImpl implements GUICreator {
 	public String path = "";
 	public DefaultListModel lm;
 	public FileAssosiationDetecter fad;
-	DataToShare dataToShare;
-	
+	DataToShare dataToShare = new DataToShareImpl();
+	public FileManager fm;
+	public JFrame jFrm;
+
+	private static final long serialVersionUID = 1L;
+	private static final String ACTION_OPEN_WITH = "Open with...";
+	private static final String COPY = "Copy";
+	private static final String RENAME = "Rename/move";
+	private static final String DELETE = "Delete";
+	private static final String PROPERTIES = "Properties";
+
+	private JPopupMenu menu;
+	public boolean doubleClick = true;
+
 	// public RightMouseMenu rmm;
 	JPopupMenu jpu;
 
 	GUICreatorImpl() {
 
-		dataToShare = new DataToShareImpl();
-		final JFrame jFrm = new JFrame("Simple file manager");
-
+		jFrm = new JFrame("Simple file manager");
+		initActions();
 		jpu = new JPopupMenu();
 		final JMenuItem jmiOpen = new JMenuItem("Open with...");
 		final JMenuItem jmiCopy = new JMenuItem("Copy");
@@ -103,7 +118,7 @@ public class GUICreatorImpl implements GUICreator {
 		}
 
 		lm = new DefaultListModel();
-		final FileManager fm = new FileManagerImpl();
+		fm = new FileManagerImpl();
 
 		jFrm.getContentPane().setLayout(new FlowLayout());
 		jFrm.getContentPane().setLayout(new BorderLayout());
@@ -118,112 +133,35 @@ public class GUICreatorImpl implements GUICreator {
 		jscrlp = new JScrollPane(jList);
 		jscrlp.setPreferredSize(new Dimension(700, 500));
 
-		jList.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
+		jList.addListSelectionListener(this);
 
-				final ListForModel modelList = new ListForModel();
-				modelList.setFactory(new RedLabelFileViewFactory());
+		jList.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger())
+					showPopup(e);
+			}
 
-				ListModelFilling listModelFilling = new ListModelFillingImpl();
-				listModelFilling.getData(this);
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger())
+					showPopup(e);
+			}
 
-				SortedSet<String> folders = new TreeSet<String>();
-				SortedSet<String> files = new TreeSet<String>();
+			private void showPopup(MouseEvent e) {
+				menu.show(e.getComponent(), e.getX(), e.getY());
+			}
 
-				int idx = jList.getSelectedIndex();
-
-				if (idx == -1) {
+			public void mouseClicked(MouseEvent e) {
+				System.out.println(e.getClickCount());
+				System.out.println(doubleClick);
+				if (e.getClickCount() != 2) {
+					doubleClick = false;
 					return;
 				}
-
-				Object value = jList.getSelectedValues()[0];
-				String fullPath = path + File.separator + value.toString();
-				if (value.toString().equals("..")) {
-					fullPath = value.toString();
-				}
-
-				if (!fullPath.equals("..")) {
-					backStep = (String) fullPath;
-				}
-
-				fileList = fm.createFileList((String) fullPath);
-
-				if (idx == 0) {
-					if (!fullPath.equals(File.separator)) {
-						int decPosition = backStep.lastIndexOf(File.separator);
-						if (decPosition == 0) {
-							backStep = backStep.substring(0, decPosition + 1);
-						} else
-							backStep = backStep.substring(0, decPosition);
-
-						// System.out.println(backStep);
-						fileList = fm.createFileList(backStep);
-					}
-				}
-
-				DefaultListModel lm = (DefaultListModel) jList.getModel();
-
-				if (fileList != null) {
-					lm.clear();
-					lm.addElement("..");
-				}
-
-				if (fileList != null) {
-
-					for (int i = 0; i < fileList.length; i++) {
-						modelList.putElement(fileList[i].getAbsoluteFile());
-					}
-
-					for (int j = 0; j < modelList.getSize(); j++) {
-						String analysis = modelList.getElementAt(j).toString();
-						int indexNumber = analysis.indexOf("text=");
-						String afterAnalysis = analysis.substring(
-								indexNumber + 5, analysis.length() - 1);
-
-						path = afterAnalysis.substring(0,
-								afterAnalysis.lastIndexOf(File.separator));
-
-						if (afterAnalysis.lastIndexOf(File.separator) == 0) {
-							path = File.separator;
-						}
-
-						jFrm.setTitle(path);
-
-						String output = afterAnalysis.substring(
-								afterAnalysis.lastIndexOf(File.separator) + 1,
-								afterAnalysis.length());
-
-						File fileType = new File(path + File.separator + output);
-						if (fileType.isFile()) {
-							files.add(output);
-						} else
-							folders.add(output);
-
-					}
-
-					Iterator<String> iteratorForFolders = folders.iterator();
-					Iterator<String> iteratorForFiles = files.iterator();
-
-					for (int i = 0; i < folders.size(); i++) {
-						if (iteratorForFolders.hasNext()) {
-							lm.addElement(iteratorForFolders.next());
-						}
-					}
-
-					for (int i = 0; i < files.size(); i++) {
-						if (iteratorForFiles.hasNext()) {
-							lm.addElement(iteratorForFiles.next());
-						}
-					}
-
-				}
-
-				if (fileList == null) {
-
-					String fileToOpen = path + File.separator + value;
-
-					OpenFileModule openFile = new OpenFileModuleImpl();
-					openFile.openThis(fad, fileToOpen, value);
+				if (e.getClickCount() == 2) {
+					doubleClick = true;
+					fillData();
 
 				}
 			}
@@ -244,97 +182,206 @@ public class GUICreatorImpl implements GUICreator {
 
 		jFrm.setVisible(true);
 
+	}
 
-		
-		
-		jList.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				check(e);
+	private void initActions() {
+		menu = new JPopupMenu();
+		Action openWith = new AbstractAction(ACTION_OPEN_WITH) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
+				String value = (String) jList.getSelectedValue();
+
+				File fileType = new File(path + File.separator + value);
+				if (fileType.isFile()) {
+					String fileToOpen = path + File.separator + value;
+
+					OpenFileModule openFile = new OpenFileModuleImpl();
+					openFile.openThis(fad, fileToOpen, value);
+				} else
+					fillData();
+
+			}
+		};
+		Action copy = new AbstractAction(COPY) {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String value = (String) jList.getSelectedValue();
+				File source = new File(path + File.separator + value);
+				String destination = JOptionPane
+						.showInputDialog("Enter a path to copy file/folder");
+
+			}
+		};
+		Action rename = new AbstractAction(RENAME) {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String value = (String) jList.getSelectedValue();
+				JOptionPane.showMessageDialog(GUICreatorImpl.this,
+						"Rename/move " + value);
+
+			}
+		};
+		Action delete = new AbstractAction(DELETE) {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String value = (String) jList.getSelectedValue();
+				JOptionPane.showMessageDialog(GUICreatorImpl.this, "Delete "
+						+ value);
+
+			}
+		};
+		Action properties = new AbstractAction(PROPERTIES) {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String value = (String) jList.getSelectedValue();
+				JOptionPane.showMessageDialog(GUICreatorImpl.this,
+						"Properties " + value);
+
+			}
+		};
+
+		getActionMap().put(ACTION_OPEN_WITH, openWith);
+		menu.add(openWith);
+		getActionMap().put(COPY, copy);
+		menu.add(copy);
+		getActionMap().put(RENAME, rename);
+		menu.add(rename);
+		getActionMap().put(DELETE, delete);
+		menu.add(delete);
+		getActionMap().put(PROPERTIES, properties);
+		menu.add(properties);
+
+	}
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+
+		System.out.println("selectedListner " + doubleClick);
+		if (doubleClick) {
+			fillData();
+			doubleClick = false;
+		} else {
+			System.out.println("Inside");
+			// jList.setSelectedIndex(-1);
+		}
+
+	}
+
+	private void fillData() {
+
+		final ListForModel modelList = new ListForModel();
+		modelList.setFactory(new RedLabelFileViewFactory());
+
+		ListModelFilling listModelFilling = new ListModelFillingImpl();
+		listModelFilling.getData(this);
+
+		SortedSet<String> folders = new TreeSet<String>();
+		SortedSet<String> files = new TreeSet<String>();
+
+		int idx = jList.getSelectedIndex();
+
+		if (idx == -1) {
+			return;
+		}
+
+		Object value = jList.getSelectedValues()[0];
+		String fullPath = path + File.separator + value.toString();
+		if (value.toString().equals("..")) {
+			fullPath = value.toString();
+		}
+
+		if (!fullPath.equals("..")) {
+			backStep = (String) fullPath;
+		}
+
+		fileList = fm.createFileList((String) fullPath);
+
+		if (idx == 0) {
+			if (!fullPath.equals(File.separator)) {
+				int decPosition = backStep.lastIndexOf(File.separator);
+				if (decPosition == 0) {
+					backStep = backStep.substring(0, decPosition + 1);
+				} else
+					backStep = backStep.substring(0, decPosition);
+
+				// System.out.println(backStep);
+				fileList = fm.createFileList(backStep);
+			}
+		}
+
+		DefaultListModel lm = (DefaultListModel) jList.getModel();
+
+		if (fileList != null) {
+			lm.clear();
+			lm.addElement("..");
+		}
+
+		if (fileList != null) {
+
+			for (int i = 0; i < fileList.length; i++) {
+				modelList.putElement(fileList[i].getAbsoluteFile());
 			}
 
-			public void mouseReleased(MouseEvent e) {
-				check(e);
-			}
+			for (int j = 0; j < modelList.getSize(); j++) {
+				String analysis = modelList.getElementAt(j).toString();
+				int indexNumber = analysis.indexOf("text=");
+				String afterAnalysis = analysis.substring(indexNumber + 5,
+						analysis.length() - 1);
 
-			public void check(MouseEvent e) {
-				if (SwingUtilities.isRightMouseButton(e)) {
+				path = afterAnalysis.substring(0,
+						afterAnalysis.lastIndexOf(File.separator));
 
-					if (e.isPopupTrigger()) {
-						// jList.setSelectedIndex(jList.locationToIndex(e.getPoint()));
-//						dataToShare = jList.locationToIndex(e.getPoint());
-			//			System.out.println(selectedItem);
-						jpu.show(jList, e.getX(), e.getY());
-					}
+				if (afterAnalysis.lastIndexOf(File.separator) == 0) {
+					path = File.separator;
 				}
-				// }
 
-				// jpu.show(jList, me.getX(), me.getY());
-				// System.out.println(jList
-				// .getSelectedIndex());
-				// }
-				//
-				// if (me.isPopupTrigger())
-				// jpu.show(me.getComponent(), me.getX(), me.getY());
-				//
-				// System.out.println(jList.getSelectedIndex());
-				//
+				jFrm.setTitle(path);
 
-				MouseListener listenerForOpen = new MouseListener() {
+				String output = afterAnalysis.substring(
+						afterAnalysis.lastIndexOf(File.separator) + 1,
+						afterAnalysis.length());
 
-					@Override
-					public void mouseReleased(MouseEvent e) {
-						// TODO Auto-generated method stub
-
-					}
-
-					@Override
-					public void mousePressed(MouseEvent e) {
-
-						File file = new File((String) lm.get(jList
-								.locationToIndex(e.getPoint())));
-						if (file.isFile()) {
-							System.out.println(dataToShare);						
-//							System.out.println((String) lm.get(jList
-//									.locationToIndex(e.getPoint())));
-						}
-
-						if (file.isDirectory()) {
-
-							System.out.println(jList.getSelectedIndex());
-						}
-
-					}
-
-					@Override
-					public void mouseClicked(MouseEvent e) {
-						// TODO Auto-generated method stub
-
-					}
-
-					@Override
-					public void mouseEntered(MouseEvent e) {
-						// TODO Auto-generated method stub
-
-					}
-
-					@Override
-					public void mouseExited(MouseEvent e) {
-						// TODO Auto-generated method stub
-
-					}
-
-				};
-
-				jmiOpen.addMouseListener(listenerForOpen);
-
-				jmiCopy.addMouseListener(this);
-				jmiRenameMove.addMouseListener(this);
-				jmiDelete.addMouseListener(this);
-				jmiProperties.addMouseListener(this);
+				File fileType = new File(path + File.separator + output);
+				if (fileType.isFile()) {
+					files.add(output);
+				} else
+					folders.add(output);
 
 			}
 
-		});
+			Iterator<String> iteratorForFolders = folders.iterator();
+			Iterator<String> iteratorForFiles = files.iterator();
+
+			for (int i = 0; i < folders.size(); i++) {
+				if (iteratorForFolders.hasNext()) {
+					lm.addElement(iteratorForFolders.next());
+				}
+			}
+
+			for (int i = 0; i < files.size(); i++) {
+				if (iteratorForFiles.hasNext()) {
+					lm.addElement(iteratorForFiles.next());
+				}
+			}
+
+		}
+
+		if (fileList == null) {
+
+			String fileToOpen = path + File.separator + value;
+
+			OpenFileModule openFile = new OpenFileModuleImpl();
+			openFile.openThis(fad, fileToOpen, value);
+
+		}
 
 	}
 
