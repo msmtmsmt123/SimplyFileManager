@@ -245,6 +245,8 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String value = (String) jList.getSelectedValue();
+				File source = new File(path + File.separator + value);
+				
 				JOptionPane.showMessageDialog(GUICreatorImpl.this,
 						"Properties " + value);
 
