@@ -10,8 +10,11 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -154,7 +157,7 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 
 			public void mouseClicked(MouseEvent e) {
 				System.out.println(e.getClickCount());
-				System.out.println(doubleClick);
+				// System.out.println(doubleClick);
 				if (e.getClickCount() != 2) {
 					doubleClick = false;
 					return;
@@ -214,7 +217,7 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 				File source = new File(path + File.separator + value);
 				String destination = JOptionPane
 						.showInputDialog("Enter a path to copy file/folder");
-
+				copingFiles(source.getAbsolutePath(), destination);
 			}
 		};
 		Action rename = new AbstractAction(RENAME) {
@@ -264,12 +267,12 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 
-		System.out.println("selectedListner " + doubleClick);
+		// System.out.println("selectedListner " + doubleClick);
 		if (doubleClick) {
 			fillData();
 			doubleClick = false;
 		} else {
-			System.out.println("Inside");
+			// System.out.println("Inside");
 			// jList.setSelectedIndex(-1);
 		}
 
@@ -383,6 +386,89 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 
 		}
 
+	}
+
+	private static void copingFiles(String source, String destination) {
+		File dir = new File(source);
+		if (dir.isDirectory()) {
+			File newDir = new File(destination, dir.getName());
+			newDir.mkdir();
+			File[] fileList = dir.listFiles();
+			for (int i = 0; i < fileList.length; i++) {
+				if (fileList[i].isDirectory()) {
+					File newDir1 = new File(destination, fileList[i].getName());
+					newDir1.mkdir();
+					copingFolders(fileList[i].getAbsolutePath(),
+							newDir1.getAbsolutePath());
+				} else {
+					File newFile = new File(newDir, fileList[i].getName());
+					copyFile(fileList[i].getAbsolutePath(), newFile);
+				}
+			}
+		} else {
+			File newFile = new File(destination, dir.getName());
+			copyFile(dir.getAbsolutePath(), newFile); }
+		
+	}
+
+	private static void copyFile(String absolutePath, File newFile) {
+		File source = new File(absolutePath);
+		InputStream in = null;
+		OutputStream out = null;
+		try {
+			in = new FileInputStream(source);
+			out = new FileOutputStream(newFile);
+			int tempInt;
+			while ((tempInt = in.read()) != -1) {
+				out.write(tempInt);
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			if (out != null) {
+				try {
+					out.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		}
+
+	}
+
+	private static void copingFolders(String source, String destination) {
+		File coping = new File(source);
+		File[] listFiles = coping.listFiles();
+		for (int i = 0; i < listFiles.length; i++) {
+			File newDir = new File(destination, listFiles[i].getName());
+			newDir.mkdir();
+			File[] tmpList = listFiles[i].listFiles();
+			if (tmpList.length != 0)
+				if (tmpList[i].isDirectory()) {
+					File newDir1 = new File(destination, tmpList[i].getName());
+					newDir1.mkdir();
+					copingFolders(tmpList[i].getAbsolutePath(),
+							newDir1.getAbsolutePath());
+				} else {
+					File newFile = new File(destination, tmpList[i].getName());
+					copyFile(tmpList[i].getAbsolutePath(), newFile);
+				}
+
+		}
 	}
 
 }
