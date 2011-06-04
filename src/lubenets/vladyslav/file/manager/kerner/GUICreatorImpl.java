@@ -15,20 +15,24 @@ import java.io.ObjectInputStream;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -49,9 +53,9 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 		GUICreator {
 
 	public JList jList;
-	public JLabel jLable;
 	public JScrollPane jscrlp;
 	public JButton jBtnBye;
+	public JTextField jFilter;
 
 	public boolean exitFlag = true;
 	public File[] fileList;
@@ -138,10 +142,76 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 		StartDataLoader startDataLoader = new StartDataLoaderImpl();
 		startDataLoader.loadInformation(this);
 
+		jFilter = new JTextField();
+		jFilter.setText("Enter file name to filter");
+		jFilter.selectAll();
+		jFilter.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void insertUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void warn() {
+				String regexp = "";
+				String input = "";
+
+				input = jFilter.getText();
+				regexp =  input;
+				Pattern p = Pattern.compile(regexp);
+
+				SortedSet<String> folders = new TreeSet<String>();
+				SortedSet<String> files = new TreeSet<String>();
+
+				File fileType = new File(path);
+				File[] newFileList = fileType.listFiles();
+				for (int k = 0; k < newFileList.length; k++) {
+
+					if (newFileList[k].isFile()) {
+						Matcher m = p.matcher(newFileList[k].getAbsolutePath());
+						if (m.find()) {
+							files.add(newFileList[k].getName());
+						}
+					} else {
+						Matcher m = p.matcher(newFileList[k].getAbsolutePath());
+						if (m.find()) {
+							folders.add(newFileList[k].getName());
+						}
+					}
+
+				}
+
+				Iterator<String> iteratorForFolders = folders.iterator();
+				Iterator<String> iteratorForFiles = files.iterator();
+
+				lm.clear();
+				lm.addElement("..");
+
+				for (int i = 0; i < folders.size(); i++) {
+					if (iteratorForFolders.hasNext()) {
+						lm.addElement(iteratorForFolders.next());
+					}
+				}
+
+				for (int i = 0; i < files.size(); i++) {
+					if (iteratorForFiles.hasNext()) {
+						lm.addElement(iteratorForFiles.next());
+					}
+				}
+
+			}
+		});
+
 		jList = new JList(lm);
 		jList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		jscrlp = new JScrollPane(jList);
-		jscrlp.setPreferredSize(new Dimension(700, 500));
+		jscrlp.setPreferredSize(new Dimension(400, 500));
 
 		jList.addListSelectionListener(this);
 
@@ -187,6 +257,7 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 			}
 		});
 
+		jFrm.getContentPane().add(jFilter, BorderLayout.BEFORE_FIRST_LINE);
 		jFrm.getContentPane().add(jscrlp, FlowLayout.LEFT);
 		jFrm.getContentPane().add(jBtnBye, BorderLayout.AFTER_LAST_LINE);
 
@@ -263,8 +334,8 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 			public void actionPerformed(ActionEvent e) {
 				String value = (String) jList.getSelectedValue();
 				File source = new File(path + File.separator + value);
-				File response = new File(path + File.separator + JOptionPane
-				.showInputDialog("Enter a new file name"));
+				File response = new File(path + File.separator
+						+ JOptionPane.showInputDialog("Enter a new file name"));
 				source.renameTo(response);
 				showData(path);
 			}
