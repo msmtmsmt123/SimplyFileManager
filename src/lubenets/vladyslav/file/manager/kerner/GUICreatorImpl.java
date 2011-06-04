@@ -34,6 +34,8 @@ import javax.swing.event.ListSelectionListener;
 
 import lubenets.vladyslav.file.manager.copy.files.CopyFiles;
 import lubenets.vladyslav.file.manager.copy.files.CopyFilesImpl;
+import lubenets.vladyslav.file.manager.delete.files.DeleteFiles;
+import lubenets.vladyslav.file.manager.delete.files.DeleteFilesImpl;
 import lubenets.vladyslav.file.manager.labels.RedLabelFileViewFactory;
 import lubenets.vladyslav.file.manager.last.command.FileAssosiationDetecter;
 import lubenets.vladyslav.file.manager.last.command.FileAssosoationDetectorImpl;
@@ -62,17 +64,22 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 	public FileManager fm;
 	public JFrame jFrm;
 
+	public String buffer = "";
+	public boolean filesMustMove = false;
+
 	private static final long serialVersionUID = 1L;
 	private static final String ACTION_OPEN_WITH = "Open with...";
 	private static final String COPY = "Copy";
-	private static final String RENAME = "Rename/move";
+	private static final String CUT = "Cut";
+	private static final String PASTE = "Paste";
+	private static final String RENAME = "Rename";
 	private static final String DELETE = "Delete";
 	private static final String PROPERTIES = "Properties";
 
 	private JPopupMenu menu;
 	public boolean doubleClick = true;
 
-	// public RightMouseMenu rmm;
+	// public RightMtoDeleteouseMenu rmm;
 	JPopupMenu jpu;
 
 	GUICreatorImpl() {
@@ -82,18 +89,19 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 		jpu = new JPopupMenu();
 		final JMenuItem jmiOpen = new JMenuItem("Open with...");
 		final JMenuItem jmiCopy = new JMenuItem("Copy");
-		final JMenuItem jmiRenameMove = new JMenuItem("Rename/Move");
+		final JMenuItem jmiCut = new JMenuItem("Cut");
+		final JMenuItem jmiPaste = new JMenuItem("Paste");
+		final JMenuItem jmiRename = new JMenuItem("Rename");
 		final JMenuItem jmiDelete = new JMenuItem("Delete");
 		final JMenuItem jmiProperties = new JMenuItem("Properties");
 
 		jpu.add(jmiOpen);
 		jpu.add(jmiCopy);
-		jpu.add(jmiRenameMove);
+		jpu.add(jmiCut);
+		jpu.add(jmiPaste);
+		jpu.add(jmiRename);
 		jpu.add(jmiDelete);
 		jpu.add(jmiProperties);
-
-		// rmm = new RightMouseMenuImpl();
-		// rmm.activate(jList);
 
 		fad = new FileAssosoationDetectorImpl();
 
@@ -156,7 +164,6 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 
 			public void mouseClicked(MouseEvent e) {
 				System.out.println(e.getClickCount());
-				// System.out.println(doubleClick);
 				if (e.getClickCount() != 2) {
 					doubleClick = false;
 					return;
@@ -175,6 +182,7 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 
 			public void actionPerformed(ActionEvent e) {
 				exitFlag = false;
+				jFrm.dispose();
 				System.exit(0);
 			}
 		});
@@ -214,10 +222,39 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 			public void actionPerformed(ActionEvent e) {
 				String value = (String) jList.getSelectedValue();
 				File source = new File(path + File.separator + value);
-				String destination = JOptionPane
-						.showInputDialog("Enter a path to copy file/folder");
+				buffer = source.getAbsolutePath();
+				filesMustMove = false;
+			}
+		};
+		Action cut = new AbstractAction(CUT) {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String value = (String) jList.getSelectedValue();
+				File source = new File(path + File.separator + value);
+				buffer = source.getAbsolutePath();
+				filesMustMove = true;
+			}
+		};
+		Action paste = new AbstractAction(PASTE) {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				File destination;
+				String value = (String) jList.getSelectedValue();
+				if (value == null || (value.equals(".."))) {
+					destination = new File(path);
+				} else
+					destination = new File(path + File.separator + value);
+
 				CopyFiles cf = new CopyFilesImpl();
-				cf.copingFiles(source.getAbsolutePath(), destination);
+				cf.copingFiles(buffer, destination.getAbsolutePath());
+				if (filesMustMove) {
+					File toDelete = new File(buffer);
+					DeleteFiles df = new DeleteFilesImpl();
+					df.removeFiles(toDelete);
+				}
+				fillData();
 			}
 		};
 		Action rename = new AbstractAction(RENAME) {
@@ -225,9 +262,11 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String value = (String) jList.getSelectedValue();
-				JOptionPane.showMessageDialog(GUICreatorImpl.this,
-						"Rename/move " + value);
-
+				File source = new File(path + File.separator + value);
+				File response = new File(path + File.separator + JOptionPane
+				.showInputDialog("Enter a new file name"));
+				source.renameTo(response);
+				showData(path);
 			}
 		};
 		Action delete = new AbstractAction(DELETE) {
@@ -235,21 +274,100 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String value = (String) jList.getSelectedValue();
-				JOptionPane.showMessageDialog(GUICreatorImpl.this, "Delete "
-						+ value);
-
+				File source = new File(path + File.separator + value);
+				int response = JOptionPane
+						.showConfirmDialog(jFrm, "Remove objects?", "Delete?",
+								JOptionPane.YES_NO_OPTION);
+				switch (response) {
+				case JOptionPane.YES_OPTION: {
+					DeleteFiles df = new DeleteFilesImpl();
+					df.removeFiles(source);
+					showData(path);
+				}
+					break;
+				case JOptionPane.NO_OPTION:
+					break;
+				}
 			}
 		};
 		Action properties = new AbstractAction(PROPERTIES) {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+
+				JList propertiesList;
+				JScrollPane scrollPaneForList;
+
+				String file = null;
+				String fileSize = null;
+				String parent;
+				String hidden;
+				String dateOfTheLastModified;
+				String writeReadPermission;
+
 				String value = (String) jList.getSelectedValue();
 				File source = new File(path + File.separator + value);
-				
-				JOptionPane.showMessageDialog(GUICreatorImpl.this,
-						"Properties " + value);
 
+				if (source.isDirectory()) {
+					file = "Directory" + source;
+					fileSize = "Folder size is " + source.length() + " byte(s)";
+				} else {
+					file = "Unknown file type";
+					fileSize = "Unknuown size";
+				}
+
+				if (source.isFile()) {
+					file = "File" + source;
+					fileSize = "File size is " + source.length() + " byte(s)";
+				} else {
+					file = "Unknown file type";
+					fileSize = "Unknuown";
+				}
+
+				if (source.canWrite()) {
+					if (source.canRead())
+						writeReadPermission = source.getPath()
+								+ " is read-write";
+					else
+						writeReadPermission = source.getPath()
+								+ " is write only";
+				} else {
+					if (source.canRead())
+						writeReadPermission = source.getPath()
+								+ " is read only";
+					else
+						writeReadPermission = "Permission to "
+								+ source.getPath() + " denied";
+				}
+
+				if (source.getParent() == null) {
+					parent = source.getPath() + " is a root directory.";
+				} else {
+					parent = "Parent of " + source.getPath() + " is "
+							+ source.getParent() + ".";
+				}
+
+				if (source.isHidden()) {
+					hidden = source.getPath() + " is Hidden.";
+				} else
+					hidden = source.getPath() + " is not Hidden.";
+
+				dateOfTheLastModified = source.getPath()
+						+ " was last modified on "
+						+ new java.util.Date(source.lastModified());
+
+				String[] infoForList = { file, fileSize, parent, hidden,
+						dateOfTheLastModified, writeReadPermission };
+
+				propertiesList = new JList(infoForList);
+				scrollPaneForList = new JScrollPane(propertiesList);
+				scrollPaneForList.setPreferredSize(new Dimension(120, 70));
+
+				JFrame frameForProperties = new JFrame("Properties");
+				frameForProperties.setSize(600, 150);
+
+				frameForProperties.getContentPane().add(scrollPaneForList);
+				frameForProperties.setVisible(true);
 			}
 		};
 
@@ -257,8 +375,12 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 		menu.add(openWith);
 		getActionMap().put(COPY, copy);
 		menu.add(copy);
+		getActionMap().put(CUT, cut);
+		menu.add(cut);
 		getActionMap().put(RENAME, rename);
 		menu.add(rename);
+		getActionMap().put(PASTE, paste);
+		menu.add(paste);
 		getActionMap().put(DELETE, delete);
 		menu.add(delete);
 		getActionMap().put(PROPERTIES, properties);
@@ -268,14 +390,10 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-
-		// System.out.println("selectedListner " + doubleClick);
 		if (doubleClick) {
 			fillData();
 			doubleClick = false;
 		} else {
-			// System.out.println("Inside");
-			// jList.setSelectedIndex(-1);
 		}
 
 	}
@@ -317,7 +435,6 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 				} else
 					backStep = backStep.substring(0, decPosition);
 
-				// System.out.println(backStep);
 				fileList = fm.createFileList(backStep);
 			}
 		}
@@ -376,7 +493,6 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 					lm.addElement(iteratorForFiles.next());
 				}
 			}
-
 		}
 
 		if (fileList == null) {
@@ -390,7 +506,38 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 
 	}
 
+	private void showData(String newPath) {
 
+		SortedSet<String> folders = new TreeSet<String>();
+		SortedSet<String> files = new TreeSet<String>();
 
+		File fileType = new File(newPath);
+		File[] newFileList = fileType.listFiles();
+		for (int k = 0; k < newFileList.length; k++) {
+			if (newFileList[k].isFile()) {
+				files.add(newFileList[k].getName());
+			} else
+				folders.add(newFileList[k].getName());
+		}
+
+		Iterator<String> iteratorForFolders = folders.iterator();
+		Iterator<String> iteratorForFiles = files.iterator();
+
+		lm.clear();
+		lm.addElement("..");
+
+		for (int i = 0; i < folders.size(); i++) {
+			if (iteratorForFolders.hasNext()) {
+				lm.addElement(iteratorForFolders.next());
+			}
+		}
+
+		for (int i = 0; i < files.size(); i++) {
+			if (iteratorForFiles.hasNext()) {
+				lm.addElement(iteratorForFiles.next());
+			}
+		}
+
+	}
 
 }

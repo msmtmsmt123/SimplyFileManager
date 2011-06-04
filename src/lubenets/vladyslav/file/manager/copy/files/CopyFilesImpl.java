@@ -12,6 +12,7 @@ public class CopyFilesImpl implements CopyFiles {
 
 	public void copingFiles(String source, String destination) {
 		File dir = new File(source);
+		dir.mkdir();
 		File[] fileList = dir.listFiles();
 		for (int i = 0; i < fileList.length; i++) {
 			if (fileList[i].isDirectory()) {
