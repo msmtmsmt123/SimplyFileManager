@@ -88,7 +88,6 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 
 	GUICreatorImpl() {
 
-
 		initActions();
 		jpu = new JPopupMenu();
 		dataToShare = new DataToShareImpl();
@@ -164,7 +163,7 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 				String input = "";
 
 				input = jFilter.getText();
-				regexp =  input;
+				regexp = input;
 				Pattern p = Pattern.compile(regexp);
 
 				SortedSet<String> folders = new TreeSet<String>();
@@ -177,12 +176,16 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 					if (newFileList[k].isFile()) {
 						Matcher m = p.matcher(newFileList[k].getAbsolutePath());
 						if (m.find()) {
-							files.add(newFileList[k].getName());
+							if (m.start() == 1) {
+								files.add(newFileList[k].getName());
+							}
 						}
 					} else {
 						Matcher m = p.matcher(newFileList[k].getAbsolutePath());
 						if (m.find()) {
-							folders.add(newFileList[k].getName());
+							if (m.start() == 1) {
+								folders.add(newFileList[k].getName());
+							}
 						}
 					}
 
@@ -616,5 +619,5 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 	public static void main(String[] str) {
 		new GUICreatorImpl();
 	}
-	
+
 }
