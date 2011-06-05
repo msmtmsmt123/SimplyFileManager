@@ -1,6 +1,9 @@
 package lubenets.vladyslav.file.manager.kerner;
 
-public class DataToShareImpl implements DataToShare {
+import java.io.Serializable;
+
+@SuppressWarnings("serial")
+public class DataToShareImpl implements DataToShare, Serializable {
 
 	int dataToShare;
 

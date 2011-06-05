@@ -64,9 +64,9 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 	public String path = "";
 	public DefaultListModel lm;
 	public FileAssosiationDetecter fad;
-	DataToShare dataToShare = new DataToShareImpl();
+	DataToShare dataToShare;
 	public FileManager fm;
-	public JFrame jFrm;
+	public static JFrame jFrm = new JFrame("Simple file manager");
 
 	public String buffer = "";
 	public boolean filesMustMove = false;
@@ -88,9 +88,10 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 
 	GUICreatorImpl() {
 
-		jFrm = new JFrame("Simple file manager");
+
 		initActions();
 		jpu = new JPopupMenu();
+		dataToShare = new DataToShareImpl();
 		final JMenuItem jmiOpen = new JMenuItem("Open with...");
 		final JMenuItem jmiCopy = new JMenuItem("Copy");
 		final JMenuItem jmiCut = new JMenuItem("Cut");
@@ -121,12 +122,12 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 				ois.close();
 
 			} catch (FileNotFoundException e1) {
-				return;
+				JOptionPane.showMessageDialog(jFrm, "File not found!");
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				JOptionPane.showMessageDialog(jFrm, "Input-output error!");
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
+				JOptionPane.showMessageDialog(jFrm, "System error occured!");
 				e.printStackTrace();
 			}
 		}
@@ -253,7 +254,6 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 			public void actionPerformed(ActionEvent e) {
 				exitFlag = false;
 				jFrm.dispose();
-				System.exit(0);
 			}
 		});
 
@@ -336,7 +336,9 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 				File source = new File(path + File.separator + value);
 				File response = new File(path + File.separator
 						+ JOptionPane.showInputDialog("Enter a new file name"));
-				source.renameTo(response);
+				if (!source.renameTo(response)) {
+					JOptionPane.showMessageDialog(jFrm, "I can`t rename this!");
+				}
 				showData(path);
 			}
 		};
@@ -611,4 +613,8 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 
 	}
 
+	public static void main(String[] str) {
+		new GUICreatorImpl();
+	}
+	
 }

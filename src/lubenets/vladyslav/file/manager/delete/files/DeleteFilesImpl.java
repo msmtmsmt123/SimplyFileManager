@@ -2,6 +2,10 @@ package lubenets.vladyslav.file.manager.delete.files;
 
 import java.io.File;
 
+import javax.swing.JOptionPane;
+
+import lubenets.vladyslav.file.manager.kerner.GUICreatorImpl;
+
 public class DeleteFilesImpl implements DeleteFiles {
 
 	@Override
@@ -11,13 +15,24 @@ public class DeleteFilesImpl implements DeleteFiles {
 			for (int i = 0; i < fileList.length; i++) {
 				if (fileList[i].isDirectory()) {
 					removeFiles(fileList[i]);
-					fileList[i].delete();
+					if (!fileList[i].delete()) {
+						JOptionPane.showMessageDialog(GUICreatorImpl.jFrm,
+						"Can not delete a file!");
+					}
 				} else {
-					fileList[i].delete();
+					if (!fileList[i].delete()) {
+						JOptionPane.showMessageDialog(GUICreatorImpl.jFrm,
+						"Can not delete a file!");
+					}
+					
 				}
 			}
 		}
-		source.delete();
+		if (!source.delete()) {
+			JOptionPane.showMessageDialog(GUICreatorImpl.jFrm,
+					"Can not create a directory!");
+		}
+
 	}
 
 }

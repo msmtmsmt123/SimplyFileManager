@@ -8,16 +8,27 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.swing.JOptionPane;
+
+import lubenets.vladyslav.file.manager.kerner.GUICreatorImpl;
+
 public class CopyFilesImpl implements CopyFiles {
 
 	public void copingFiles(String source, String destination) {
 		File dir = new File(source);
-		dir.mkdir();
+		if (!dir.mkdir()) {
+			JOptionPane.showMessageDialog(GUICreatorImpl.jFrm,
+					"Can not create a directory!");
+		}
+
 		File[] fileList = dir.listFiles();
 		for (int i = 0; i < fileList.length; i++) {
 			if (fileList[i].isDirectory()) {
 				File newDir = new File(destination, fileList[i].getName());
-				newDir.mkdir();
+				if (!newDir.mkdir()) {
+					JOptionPane.showMessageDialog(GUICreatorImpl.jFrm,
+							"Can not create a directory!");
+				}
 				copingFiles(fileList[i].getAbsolutePath(),
 						newDir.getAbsolutePath());
 			} else {

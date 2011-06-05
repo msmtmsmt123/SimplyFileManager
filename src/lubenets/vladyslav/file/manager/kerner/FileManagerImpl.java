@@ -1,8 +1,10 @@
 package lubenets.vladyslav.file.manager.kerner;
 
 import java.io.File;
+import java.io.Serializable;
 
-public class FileManagerImpl implements FileManager {
+@SuppressWarnings("serial")
+public class FileManagerImpl implements FileManager, Serializable {
 
 	
 	public File[] createFileList(String path) {
