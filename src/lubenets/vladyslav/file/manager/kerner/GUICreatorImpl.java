@@ -36,17 +36,17 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import lubenets.vladyslav.file.manager.copy.files.CopyFiles;
-import lubenets.vladyslav.file.manager.copy.files.CopyFilesImpl;
-import lubenets.vladyslav.file.manager.delete.files.DeleteFiles;
-import lubenets.vladyslav.file.manager.delete.files.DeleteFilesImpl;
+import lubenets.vladyslav.file.manager.data.loader.StartDataLoader;
+import lubenets.vladyslav.file.manager.data.loader.StartDataLoaderImpl;
 import lubenets.vladyslav.file.manager.labels.RedLabelFileViewFactory;
 import lubenets.vladyslav.file.manager.last.command.FileAssosiationDetecter;
 import lubenets.vladyslav.file.manager.last.command.FileAssosoationDetectorImpl;
-import lubenets.vladyslav.file.manager.open.file.OpenFileModule;
-import lubenets.vladyslav.file.manager.open.file.OpenFileModuleImpl;
-import lubenets.vladyslav.file.manager.start.data.loader.StartDataLoader;
-import lubenets.vladyslav.file.manager.start.data.loader.StartDataLoaderImpl;
+import lubenets.vladyslav.file.manager.right.mouse.menu.CopyFiles;
+import lubenets.vladyslav.file.manager.right.mouse.menu.CopyFilesImpl;
+import lubenets.vladyslav.file.manager.right.mouse.menu.DeleteFiles;
+import lubenets.vladyslav.file.manager.right.mouse.menu.DeleteFilesImpl;
+import lubenets.vladyslav.file.manager.right.mouse.menu.OpenFileModule;
+import lubenets.vladyslav.file.manager.right.mouse.menu.OpenFileModuleImpl;
 
 @SuppressWarnings("serial")
 public class GUICreatorImpl extends JPanel implements ListSelectionListener,
@@ -169,33 +169,55 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener,
 				SortedSet<String> folders = new TreeSet<String>();
 				SortedSet<String> files = new TreeSet<String>();
 
-				File fileType = new File(path);
-				File[] newFileList = fileType.listFiles();
-				for (int k = 0; k < newFileList.length; k++) {
+				if (input.length() != 0) {
+					int searchPosition;
+					File fileType = new File(path);
+					File[] newFileList = fileType.listFiles();
+					for (int k = 0; k < newFileList.length; k++) {
 
-					if (newFileList[k].isFile()) {
-						Matcher m = p.matcher(newFileList[k].getAbsolutePath());
-						if (m.find()) {
-							if (m.start() == 1) {
-								files.add(newFileList[k].getName());
+
+						if (newFileList[k].isFile()) {
+							Matcher m = p.matcher(newFileList[k]
+									.getAbsolutePath());
+							if (m.find()) {
+								System.out.println(m.start());
+								if (!path.equals(File.separator)) {
+									searchPosition = path.length() + 1;
+								} else if (input.equals(".")) {
+									searchPosition = 0;
+								} else searchPosition = 1;
+								if (m.start() == searchPosition) {
+									files.add(newFileList[k].getName());
+								}
+							}
+						} else {
+							Matcher m = p.matcher(newFileList[k]
+									.getAbsolutePath());
+							if (m.find()) {
+								System.out.println(m.start());
+								if (!path.equals(File.separator)) {
+									searchPosition = path.length() + 1;
+								} else if (input.equals(".")) {
+									searchPosition = 0;									
+								} else searchPosition = 1;
+								if (m.start() == searchPosition) {
+									folders.add(newFileList[k].getName());
+								}
 							}
 						}
-					} else {
-						Matcher m = p.matcher(newFileList[k].getAbsolutePath());
-						if (m.find()) {
-							if (m.start() == 1) {
-								folders.add(newFileList[k].getName());
-							}
-						}
+
 					}
+					lm.clear();
+					lm.addElement("..");
 
+				} else {
+						showData(path);
 				}
 
 				Iterator<String> iteratorForFolders = folders.iterator();
 				Iterator<String> iteratorForFiles = files.iterator();
 
-				lm.clear();
-				lm.addElement("..");
+
 
 				for (int i = 0; i < folders.size(); i++) {
 					if (iteratorForFolders.hasNext()) {
