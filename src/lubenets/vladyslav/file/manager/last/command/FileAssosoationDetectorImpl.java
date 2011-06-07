@@ -13,14 +13,12 @@ public class FileAssosoationDetectorImpl implements FileAssosiationDetecter, Ser
 	
 	Map<String, String> fileAssosiationMap = new HashMap<String, String>();
 
-	@Override
 	public String getLastCommand(String fileType) {
 		if (fileAssosiationMap.containsKey(fileType))
 			return fileAssosiationMap.get(fileType);
 		return null;
 	}
 
-	@Override
 	public void setLastCommand(String fileType, String commandForFileOpenning) {
 		fileAssosiationMap.put(fileType, commandForFileOpenning);
 	}

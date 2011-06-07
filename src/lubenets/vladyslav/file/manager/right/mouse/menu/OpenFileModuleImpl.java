@@ -11,7 +11,7 @@ import lubenets.vladyslav.file.manager.last.command.FileAssosiationDetecter;
 
 public class OpenFileModuleImpl implements OpenFileModule {
 
-	@Override
+
 	public void openThis(FileAssosiationDetecter fad, String fileToOpen,
 			Object value) {
 		Runtime r = Runtime.getRuntime();

@@ -6,7 +6,6 @@ import lubenets.vladyslav.file.manager.kerner.GUICreatorImpl;
 
 public class StartDataLoaderImpl implements StartDataLoader {
 
-	@Override
 	public void loadInformation(GUICreatorImpl guiCreatorImpl) {
 		
 		guiCreatorImpl.fileList = File.listRoots();		

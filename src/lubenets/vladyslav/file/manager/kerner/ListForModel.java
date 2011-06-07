@@ -28,7 +28,7 @@ public class ListForModel extends AbstractListModel {
 		this.factory = factory;
 	}
 
-	ListForModel() {
+	public ListForModel() {
 
 	}
 

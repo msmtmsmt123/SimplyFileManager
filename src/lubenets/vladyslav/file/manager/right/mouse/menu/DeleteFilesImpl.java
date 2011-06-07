@@ -8,7 +8,7 @@ import lubenets.vladyslav.file.manager.kerner.GUICreatorImpl;
 
 public class DeleteFilesImpl implements DeleteFiles {
 
-	@Override
+
 	public void removeFiles(File source) {
 		File[] fileList = source.listFiles();
 		if (fileList != null) {
