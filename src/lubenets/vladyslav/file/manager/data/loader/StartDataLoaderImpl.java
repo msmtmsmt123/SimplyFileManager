@@ -6,7 +6,8 @@ import lubenets.vladyslav.file.manager.kerner.GUICreatorImpl;
 
 public class StartDataLoaderImpl implements StartDataLoader {
 
-	public void loadInformation(GUICreatorImpl guiCreatorImpl) {
+	@SuppressWarnings("static-access")
+    public void loadInformation(GUICreatorImpl guiCreatorImpl) {
 		
 		guiCreatorImpl.fileList = File.listRoots();		
 		guiCreatorImpl.data = new String[guiCreatorImpl.fileList.length];

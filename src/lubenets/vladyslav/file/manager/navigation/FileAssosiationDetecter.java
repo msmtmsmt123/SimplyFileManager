@@ -1,4 +1,4 @@
-package lubenets.vladyslav.file.manager.last.command;
+package lubenets.vladyslav.file.manager.navigation;
 
 public interface FileAssosiationDetecter {
 

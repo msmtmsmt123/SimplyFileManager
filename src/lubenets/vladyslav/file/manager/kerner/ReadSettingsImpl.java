@@ -8,7 +8,7 @@ import java.io.ObjectInputStream;
 
 import javax.swing.JOptionPane;
 
-import lubenets.vladyslav.file.manager.last.command.FileAssosiationDetecter;
+import lubenets.vladyslav.file.manager.navigation.FileAssosiationDetecter;
 import lubenets.vladyslav.file.manager.right.mouse.menu.OpenFileModule;
 
 public class ReadSettingsImpl implements ReadSettings {

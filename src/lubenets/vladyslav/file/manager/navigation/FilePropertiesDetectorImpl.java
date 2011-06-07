@@ -1,4 +1,4 @@
-package lubenets.vladyslav.file.manager.last.command;
+package lubenets.vladyslav.file.manager.navigation;
 
 import java.awt.Dimension;
 import java.io.File;

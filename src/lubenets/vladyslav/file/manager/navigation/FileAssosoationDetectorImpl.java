@@ -1,8 +1,9 @@
-package lubenets.vladyslav.file.manager.last.command;
+package lubenets.vladyslav.file.manager.navigation;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
 
 public class FileAssosoationDetectorImpl implements FileAssosiationDetecter, Serializable{
 

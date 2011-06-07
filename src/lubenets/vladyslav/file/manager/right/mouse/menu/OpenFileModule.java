@@ -1,6 +1,6 @@
 package lubenets.vladyslav.file.manager.right.mouse.menu;
 
-import lubenets.vladyslav.file.manager.last.command.FileAssosiationDetecter;
+import lubenets.vladyslav.file.manager.navigation.FileAssosiationDetecter;
 
 
 public interface OpenFileModule {

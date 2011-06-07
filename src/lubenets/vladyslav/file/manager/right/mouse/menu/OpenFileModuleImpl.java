@@ -7,7 +7,7 @@ import java.io.ObjectOutputStream;
 
 import javax.swing.JOptionPane;
 
-import lubenets.vladyslav.file.manager.last.command.FileAssosiationDetecter;
+import lubenets.vladyslav.file.manager.navigation.FileAssosiationDetecter;
 
 public class OpenFileModuleImpl implements OpenFileModule {
 
