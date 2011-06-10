@@ -2,73 +2,73 @@ package lubenets.vladyslav.file.manager.right.mouse.menu;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.AbstractAction;
 import javax.swing.JPopupMenu;
 
 import lubenets.vladyslav.file.manager.kerner.GUICreatorImpl;
-import lubenets.vladyslav.file.manager.navigation.FilePropertiesDetectorImpl;
 
+public class PopUpMenu {
 
+    public String strAction;
+    Invoker objInvoker;
 
-public class RightMouseMenuImpl implements RightMouseMenu {
-
-	
-	
-	@SuppressWarnings("serial")
+    @SuppressWarnings("serial")
     public void activate() {
-        
-	    GUICreatorImpl.menu = new JPopupMenu();
+
+        objInvoker = new Invoker();
+
+        GUICreatorImpl.menu = new JPopupMenu();
 
         Action openWith = new AbstractAction(GUICreatorImpl.ACTION_OPEN_WITH) {
 
             public void actionPerformed(ActionEvent e) {
-                OpenFileWith ofw = new OpenFileWithImpl();
-                ofw.openThis();
+                strAction = GUICreatorImpl.ACTION_OPEN_WITH;
+                executeCommand(strAction);
             }
+
         };
+
         Action copy = new AbstractAction(GUICreatorImpl.COPY) {
 
             public void actionPerformed(ActionEvent e) {
-                CopyFile cf = new CopyFileImpl();
-                cf.copyThis();
-            }
+                strAction = GUICreatorImpl.COPY;
+                executeCommand(strAction);            }
         };
+
         Action cut = new AbstractAction(GUICreatorImpl.CUT) {
 
             public void actionPerformed(ActionEvent e) {
-                CutFile cf = new CutFileImpl();
-                cf.copyThis();
-            }
+                strAction = GUICreatorImpl.CUT;
+                executeCommand(strAction);            }
         };
+
         Action paste = new AbstractAction(GUICreatorImpl.PASTE) {
 
             public void actionPerformed(ActionEvent e) {
-                PasteFile pf = new PasteFileImpl();
-                pf.pasteThis();
-
-            }
+                strAction = GUICreatorImpl.PASTE;
+                executeCommand(strAction);            }
         };
+
         Action rename = new AbstractAction(GUICreatorImpl.RENAME) {
 
             public void actionPerformed(ActionEvent e) {
-                RenameFile rf = new RenameFileImpl();
-                rf.renameThis();
-            }
+                strAction = GUICreatorImpl.RENAME;
+                executeCommand(strAction);            }
         };
+
         Action delete = new AbstractAction(GUICreatorImpl.DELETE) {
 
             public void actionPerformed(ActionEvent e) {
-                DeleteFile dfi = new DeleteFileImpl();
-                dfi.deleteThis();
-            }
+                strAction = GUICreatorImpl.DELETE;
+                executeCommand(strAction);            }
         };
+
         Action properties = new AbstractAction(GUICreatorImpl.PROPERTIES) {
 
             public void actionPerformed(ActionEvent e) {
-                FilePropertiesDetector fpd = new FilePropertiesDetectorImpl();
-                fpd.showProperties();
-            }
+                strAction = GUICreatorImpl.PROPERTIES;
+                executeCommand(strAction);            }
         };
 
         GUICreatorImpl.jList.getActionMap().put(GUICreatorImpl.ACTION_OPEN_WITH, openWith);
@@ -86,8 +86,14 @@ public class RightMouseMenuImpl implements RightMouseMenu {
         GUICreatorImpl.jList.getActionMap().put(GUICreatorImpl.PROPERTIES, properties);
         GUICreatorImpl.menu.add(properties);
 
-		
-	}
-	
+    }
+
+    public void executeCommand(String strAction) {
+
+        if (strAction != null) {
+            Command executingCommand = objInvoker.getCommand(strAction);
+            executingCommand.execute();
+        }
+    }
 
 }

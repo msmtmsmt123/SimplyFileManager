@@ -1,4 +1,4 @@
-package lubenets.vladyslav.file.manager.navigation;
+package lubenets.vladyslav.file.manager.right.mouse.menu;
 
 import java.awt.Dimension;
 import java.io.File;
@@ -8,11 +8,14 @@ import javax.swing.JList;
 import javax.swing.JScrollPane;
 
 import lubenets.vladyslav.file.manager.kerner.GUICreatorImpl;
-import lubenets.vladyslav.file.manager.right.mouse.menu.FilePropertiesDetector;
 
-public class FilePropertiesDetectorImpl implements FilePropertiesDetector {
+public class PropertiesCommand extends Command {
 
-    public void showProperties() {
+    public PropertiesCommand() {
+        strCommand = GUICreatorImpl.PROPERTIES;
+    }
+
+    public void execute() {
         JList propertiesList;
         JScrollPane scrollPaneForList;
 
@@ -44,25 +47,20 @@ public class FilePropertiesDetectorImpl implements FilePropertiesDetector {
 
         if (source.canWrite()) {
             if (source.canRead())
-                writeReadPermission = source.getPath()
-                        + " is read-write";
+                writeReadPermission = source.getPath() + " is read-write";
             else
-                writeReadPermission = source.getPath()
-                        + " is write only";
+                writeReadPermission = source.getPath() + " is write only";
         } else {
             if (source.canRead())
-                writeReadPermission = source.getPath()
-                        + " is read only";
+                writeReadPermission = source.getPath() + " is read only";
             else
-                writeReadPermission = "Permission to "
-                        + source.getPath() + " denied";
+                writeReadPermission = "Permission to " + source.getPath() + " denied";
         }
 
         if (source.getParent() == null) {
             parent = source.getPath() + " is a root directory.";
         } else {
-            parent = "Parent of " + source.getPath() + " is "
-                    + source.getParent() + ".";
+            parent = "Parent of " + source.getPath() + " is " + source.getParent() + ".";
         }
 
         if (source.isHidden()) {
@@ -70,12 +68,9 @@ public class FilePropertiesDetectorImpl implements FilePropertiesDetector {
         } else
             hidden = source.getPath() + " is not Hidden.";
 
-        dateOfTheLastModified = source.getPath()
-                + " was last modified on "
-                + new java.util.Date(source.lastModified());
+        dateOfTheLastModified = source.getPath() + " was last modified on " + new java.util.Date(source.lastModified());
 
-        String[] infoForList = { file, fileSize, parent, hidden,
-                dateOfTheLastModified, writeReadPermission };
+        String[] infoForList = { file, fileSize, parent, hidden, dateOfTheLastModified, writeReadPermission };
 
         propertiesList = new JList(infoForList);
         scrollPaneForList = new JScrollPane(propertiesList);
@@ -86,7 +81,7 @@ public class FilePropertiesDetectorImpl implements FilePropertiesDetector {
 
         frameForProperties.getContentPane().add(scrollPaneForList);
         frameForProperties.setVisible(true);
-    
+
     }
 
 }

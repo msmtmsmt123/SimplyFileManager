@@ -9,8 +9,7 @@ import javax.swing.DefaultListModel;
 
 import lubenets.vladyslav.file.manager.kerner.GUICreatorImpl;
 import lubenets.vladyslav.file.manager.kerner.ListForModel;
-import lubenets.vladyslav.file.manager.right.mouse.menu.OpenFileModule;
-import lubenets.vladyslav.file.manager.right.mouse.menu.OpenFileModuleImpl;
+import lubenets.vladyslav.file.manager.right.mouse.menu.OpenWithCommand;
 
 public class FillListImpl implements FillList {
 
@@ -107,7 +106,7 @@ public class FillListImpl implements FillList {
 
             String fileToOpen = GUICreatorImpl.path + File.separator + value;
 
-            OpenFileModule openFile = new OpenFileModuleImpl();
+            OpenWithCommand openFile = new OpenWithCommand();
             openFile.openThis(GUICreatorImpl.fad, fileToOpen, value);
 
         }

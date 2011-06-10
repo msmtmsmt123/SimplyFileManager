@@ -32,11 +32,9 @@ import lubenets.vladyslav.file.manager.file.filter.FileFilter;
 import lubenets.vladyslav.file.manager.file.filter.FileFilterImpl;
 import lubenets.vladyslav.file.manager.navigation.FileAssosiationDetecter;
 import lubenets.vladyslav.file.manager.navigation.FileAssosoationDetectorImpl;
-import lubenets.vladyslav.file.manager.right.mouse.menu.MouseClicked;
-import lubenets.vladyslav.file.manager.right.mouse.menu.MouseClickedImpl;
-import lubenets.vladyslav.file.manager.right.mouse.menu.OpenFileModule;
-import lubenets.vladyslav.file.manager.right.mouse.menu.RightMouseMenu;
-import lubenets.vladyslav.file.manager.right.mouse.menu.RightMouseMenuImpl;
+import lubenets.vladyslav.file.manager.navigation.MouseClicked;
+import lubenets.vladyslav.file.manager.navigation.MouseClickedImpl;
+import lubenets.vladyslav.file.manager.right.mouse.menu.PopUpMenu;
 
 public class GUICreatorImpl extends JPanel implements ListSelectionListener, GUICreator {
 
@@ -52,7 +50,7 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener, GUI
     public static FillList fl;
     public static FileManager fm;
     public static JFrame jFrm;
-    public static RightMouseMenu rmm;
+    public static PopUpMenu pom;
     public static File file;
     public static ReadSettings rs;
     public static StartDataLoader startDataLoader;
@@ -66,6 +64,7 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener, GUI
     public static final String RENAME = "Rename";
     public static final String DELETE = "Delete";
     public static final String PROPERTIES = "Properties";
+    public static final String FILE_ASSOSIATION_CFG = "ucf";
 
     // Variables
     public static boolean doubleClick = true;
@@ -75,15 +74,14 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener, GUI
     public static String backStep;
     public static String path = "";
     public static String buffer = "";
-    public static boolean filesMustMove = false;
 
     GUICreatorImpl() {
 
-        rmm = new RightMouseMenuImpl();
+        pom = new PopUpMenu();
         fl = new FillListImpl();
         jFrm = new JFrame("Simple file manager");
         jpu = new JPopupMenu();
-        file = new File(OpenFileModule.FILE_ASSOSIATION_CFG);
+        file = new File(FILE_ASSOSIATION_CFG);
         rs = new ReadSettingsImpl();
         fad = new FileAssosoationDetectorImpl();
         lm = new DefaultListModel();
@@ -182,7 +180,7 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener, GUI
         jpu.add(jmiDelete);
         jpu.add(jmiProperties);
 
-        rmm.activate();
+        pom.activate();
 
     }
 

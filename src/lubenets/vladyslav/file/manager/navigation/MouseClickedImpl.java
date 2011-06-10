@@ -1,4 +1,4 @@
-package lubenets.vladyslav.file.manager.right.mouse.menu;
+package lubenets.vladyslav.file.manager.navigation;
 
 import java.awt.event.MouseEvent;
 

@@ -9,7 +9,6 @@ import java.io.ObjectInputStream;
 import javax.swing.JOptionPane;
 
 import lubenets.vladyslav.file.manager.navigation.FileAssosiationDetecter;
-import lubenets.vladyslav.file.manager.right.mouse.menu.OpenFileModule;
 
 public class ReadSettingsImpl implements ReadSettings {
 
@@ -18,7 +17,7 @@ public class ReadSettingsImpl implements ReadSettings {
             try {
 
                 FileInputStream fis = new FileInputStream(
-                        OpenFileModule.FILE_ASSOSIATION_CFG);
+                        GUICreatorImpl.FILE_ASSOSIATION_CFG);
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 GUICreatorImpl.fad = (FileAssosiationDetecter) ois.readObject();
                 ois.close();
@@ -29,7 +28,7 @@ public class ReadSettingsImpl implements ReadSettings {
                 JOptionPane.showMessageDialog(GUICreatorImpl.jFrm, "Input-output error!");
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
-                JOptionPane.showMessageDialog(GUICreatorImpl.jFrm, "System error occured!");
+                JOptionPane.showMessageDialog(GUICreatorImpl.jFrm, "Error to load system settings!");
                 e.printStackTrace();
             }
         }
