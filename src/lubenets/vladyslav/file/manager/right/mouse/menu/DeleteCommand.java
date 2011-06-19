@@ -4,7 +4,7 @@ import java.io.File;
 
 import javax.swing.JOptionPane;
 
-import lubenets.vladyslav.file.manager.kerner.GUICreatorImpl;
+import lubenets.vladyslav.file.manager.controller.GUICreatorImpl;
 
 public class DeleteCommand extends Command {
 

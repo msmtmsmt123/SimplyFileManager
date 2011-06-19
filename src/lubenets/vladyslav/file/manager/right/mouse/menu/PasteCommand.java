@@ -10,7 +10,7 @@ import java.io.OutputStream;
 
 import javax.swing.JOptionPane;
 
-import lubenets.vladyslav.file.manager.kerner.GUICreatorImpl;
+import lubenets.vladyslav.file.manager.controller.GUICreatorImpl;
 
 public class PasteCommand extends Command {
 

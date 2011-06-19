@@ -6,7 +6,7 @@ import javax.swing.Action;
 import javax.swing.AbstractAction;
 import javax.swing.JPopupMenu;
 
-import lubenets.vladyslav.file.manager.kerner.GUICreatorImpl;
+import lubenets.vladyslav.file.manager.controller.GUICreatorImpl;
 
 public class PopUpMenu {
 
@@ -18,7 +18,7 @@ public class PopUpMenu {
 
         objInvoker = new Invoker();
 
-        GUICreatorImpl.menu = new JPopupMenu();
+//        GUICreatorImpl.menu = new JPopupMenu();
 
         Action openWith = new AbstractAction(GUICreatorImpl.ACTION_OPEN_WITH) {
 

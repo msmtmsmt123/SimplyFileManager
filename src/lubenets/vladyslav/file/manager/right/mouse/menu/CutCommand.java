@@ -2,7 +2,7 @@ package lubenets.vladyslav.file.manager.right.mouse.menu;
 
 import java.io.File;
 
-import lubenets.vladyslav.file.manager.kerner.GUICreatorImpl;
+import lubenets.vladyslav.file.manager.controller.GUICreatorImpl;
 
 public class CutCommand extends Command {
 

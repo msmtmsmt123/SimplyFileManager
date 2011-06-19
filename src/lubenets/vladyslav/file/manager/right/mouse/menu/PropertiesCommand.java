@@ -7,7 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 
-import lubenets.vladyslav.file.manager.kerner.GUICreatorImpl;
+import lubenets.vladyslav.file.manager.controller.GUICreatorImpl;
 
 public class PropertiesCommand extends Command {
 
