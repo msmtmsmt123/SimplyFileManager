@@ -43,13 +43,13 @@ public class GUICreatorImpl extends JPanel implements ListSelectionListener, GUI
      */
     private static final long serialVersionUID = 1L;
     // Components
-    public  JList jList;
+    public static  JList jList;
     public  JScrollPane jscrlp;
     public  JButton jBtnBye;
     public  JTextField jFilter;
-    public  JPopupMenu menu;
+    public static  JPopupMenu menu;
     public  JPopupMenu jpu;
-    public  DefaultListModel lm;
+    public static  DefaultListModel lm;
     public  FileAssosiationDetecter fad;
     public  FillList fl;
     public  FileManager fm;

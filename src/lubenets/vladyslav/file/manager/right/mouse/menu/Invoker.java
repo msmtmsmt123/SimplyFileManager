@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Invoker {
 
-    private List<Command> commandList = new ArrayList<Command>();
+    private List<Cmd> commandList = new ArrayList<Cmd>();
 
     public Invoker() {
         commandList.add(new OpenWithCommand());
@@ -17,8 +17,8 @@ public class Invoker {
         commandList.add(new PropertiesCommand());
     }
 
-    public Command getCommand(String strCommand) {
-        for (Command obj : commandList) {
+    public Cmd getCommand(String strCommand) {
+        for (Cmd obj : commandList) {
             if (obj.strCommand.equals(strCommand)) {
                 return obj;
             }

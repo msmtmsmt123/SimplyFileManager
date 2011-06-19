@@ -1,25 +1,14 @@
 package lubenets.vladyslav.file.manager.right.mouse.menu;
 
-import java.io.File;
+import lubenets.vladyslav.file.manager.main.ViewModel;
 
-import javax.swing.JOptionPane;
-
-import lubenets.vladyslav.file.manager.controller.GUICreatorImpl;
-
-public class RenameCommand extends Command {
+public class RenameCommand extends Cmd {
     public RenameCommand() {
-        strCommand = GUICreatorImpl.RENAME;
+        strCommand = RENAME;
     }
 
-    public void execute() {
-        String value = (String) GUICreatorImpl.jList.getSelectedValue();
-        File source = new File(GUICreatorImpl.path + File.separator + value);
-        File response = new File(GUICreatorImpl.path + File.separator + JOptionPane.showInputDialog("Enter a new file name"));
-        if (!source.renameTo(response)) {
-            JOptionPane.showMessageDialog(GUICreatorImpl.jFrm, "I can`t rename this!");
-        }
-        GUICreatorImpl.fl.fillData(GUICreatorImpl.path);
-
+    public void execute(ViewModel localeViewModel) {
+        localeViewModel.getApplication().getFileOperationModel().renameCommand();
     }
 
 }

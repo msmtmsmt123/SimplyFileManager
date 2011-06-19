@@ -6,7 +6,13 @@ public class Application {
     private SettingsModel settingsModel;
     private ViewModel viewModel;
     private Controller controller;
+    private FileOperationModel fileOperationModel;
 
+    public FileOperationModel getFileOperationModel() {
+        return fileOperationModel;
+        
+    }
+    
     public ViewModel getViewModel() {
         return viewModel;
     }
@@ -27,6 +33,7 @@ public class Application {
         viewModel = new ViewModel(this);
         fileModel = new FileModel(this);
         settingsModel = new SettingsModel(this);
+        fileOperationModel = new FileOperationModel(this);
         controller = new Controller(this);
 
 

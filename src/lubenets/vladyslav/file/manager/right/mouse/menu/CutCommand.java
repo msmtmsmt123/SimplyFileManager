@@ -1,20 +1,15 @@
 package lubenets.vladyslav.file.manager.right.mouse.menu;
 
-import java.io.File;
+import lubenets.vladyslav.file.manager.main.ViewModel;
 
-import lubenets.vladyslav.file.manager.controller.GUICreatorImpl;
-
-public class CutCommand extends Command {
+public class CutCommand extends Cmd {
 
     public CutCommand() {
-        strCommand = GUICreatorImpl.CUT;
+        strCommand = CUT;
     }
 
-    public void execute() {
-        String value = (String) GUICreatorImpl.jList.getSelectedValue();
-        File source = new File(GUICreatorImpl.path + File.separator + value);
-        GUICreatorImpl.buffer = source.getAbsolutePath();
-        filesMustMove = true;
+    public void execute(ViewModel localeViewModel) {
+        localeViewModel.getApplication().getFileOperationModel().cutCommand();
 
     }
 

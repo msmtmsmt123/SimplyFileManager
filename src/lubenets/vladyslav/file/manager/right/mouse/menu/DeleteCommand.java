@@ -1,53 +1,16 @@
 package lubenets.vladyslav.file.manager.right.mouse.menu;
 
-import java.io.File;
+import lubenets.vladyslav.file.manager.main.ViewModel;
 
-import javax.swing.JOptionPane;
-
-import lubenets.vladyslav.file.manager.controller.GUICreatorImpl;
-
-public class DeleteCommand extends Command {
+public class DeleteCommand extends Cmd {
 
     public DeleteCommand() {
-        strCommand = GUICreatorImpl.DELETE;
+        strCommand = DELETE;
     }
 
-    public void execute() {
-        String value = (String) GUICreatorImpl.jList.getSelectedValue();
-        File source = new File(GUICreatorImpl.path + File.separator + value);
-        int response = JOptionPane.showConfirmDialog(GUICreatorImpl.jFrm, "Remove objects?", "Delete?", JOptionPane.YES_NO_OPTION);
-        switch (response) {
-        case JOptionPane.YES_OPTION: {
-            removeFiles(source);
-            GUICreatorImpl.fl.fillData(GUICreatorImpl.path);
-        }
-            break;
-        case JOptionPane.NO_OPTION:
-            break;
-        }
-
-    }
-
-    public void removeFiles(File source) {
-        File[] fileList = source.listFiles();
-        if (fileList != null) {
-            for (int i = 0; i < fileList.length; i++) {
-                if (fileList[i].isDirectory()) {
-                    removeFiles(fileList[i]);
-                    if (!fileList[i].delete()) {
-                        JOptionPane.showMessageDialog(GUICreatorImpl.jFrm, "Can not delete a file!");
-                    }
-                } else {
-                    if (!fileList[i].delete()) {
-                        JOptionPane.showMessageDialog(GUICreatorImpl.jFrm, "Can not delete a file!");
-                    }
-
-                }
-            }
-        }
-        if (!source.delete()) {
-            JOptionPane.showMessageDialog(GUICreatorImpl.jFrm, "Can not create a directory!");
-        }
+    public void execute(ViewModel localeViewModel) {
+        localeViewModel.getApplication().getFileOperationModel().deleteCommand();
+        
 
     }
 

@@ -27,11 +27,11 @@ import lubenets.vladyslav.file.manager.right.mouse.menu.PopUpMenu;
 
 public class ViewModel extends ApplicationModel implements ListSelectionListener {
 
-    JList jList;
+    public JList jList;
     JScrollPane jscrlp;
     JButton jBtnBye;
     JTextField jFilter;
-//    JPopupMenu menu;
+    public JPopupMenu menu;
     JPopupMenu jpu;
     JFrame jFrm;
     PopUpMenu pom;
@@ -43,6 +43,7 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
 
     public ViewModel(Application application) {
         super(application);
+        menu = new JPopupMenu();
         lm = new DefaultListModel();
         showGUI();
     }
@@ -86,12 +87,12 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
             }
 
             private void showPopup(MouseEvent e) {
-//                menu.show(e.getComponent(), e.getX(), e.getY());
+                menu.show(e.getComponent(), e.getX(), e.getY());
             }
 
             public void mouseClicked(MouseEvent e) {
+                getApplication().getFileModel().selectedIndex = jList.getSelectedIndex();
                 if (e.getClickCount() == 2) {
-                    getApplication().getFileModel().selectedIndex = jList.getSelectedIndex();
                     getApplication().getController().setDataToListModelAfterSelection(lm);
                 }
             }
@@ -129,7 +130,7 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
         jpu.add(jmiDelete);
         jpu.add(jmiProperties);
 
-        pom.activate();
+        pom.activate(this);
     }
 
     public void createFilterListener() {

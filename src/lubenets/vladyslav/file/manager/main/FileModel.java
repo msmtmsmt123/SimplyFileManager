@@ -12,6 +12,8 @@ public class FileModel extends ApplicationModel {
     public Map<Integer, String> modelOfTheList = new HashMap<Integer, String>();
     public String path;
     protected int selectedIndex;
+    public String buffer;
+    public boolean filesMustMove;
 
     public FileModel(Application application) {
         super(application);
@@ -25,7 +27,7 @@ public class FileModel extends ApplicationModel {
 
     }
 
-    void displayFilesFromAPath() {
+    public void displayFilesFromAPath() {
         SortedSet<String> folders = new TreeSet<String>();
         SortedSet<String> files = new TreeSet<String>();
 
@@ -36,13 +38,14 @@ public class FileModel extends ApplicationModel {
 
             for (int i = 0; i < filesList.length; i++) {
 
-                File isItFile = new File(filesList[i]);
+                File isItFile = new File(getApplication().getFileModel().path + File.separator + filesList[i]);
 
                 if (isItFile.isFile()) {
                     files.add(filesList[i]);
-                } else
+                }
+                if (isItFile.isDirectory()) {
                     folders.add(filesList[i]);
-
+                }
             }
 
             Iterator<String> iteratorForFolders = folders.iterator();
@@ -55,9 +58,9 @@ public class FileModel extends ApplicationModel {
                 }
             }
 
-            for (int i = 0; i < files.size(); i++) {
+            for (int i = 0; i < getApplication().getFileModel().modelOfTheList.size() + files.size(); i++) {
                 if (iteratorForFiles.hasNext()) {
-                    getApplication().getFileModel().modelOfTheList.put(i, iteratorForFiles.next());
+                    getApplication().getFileModel().modelOfTheList.put(getApplication().getFileModel().modelOfTheList.size() + i, iteratorForFiles.next());
                 }
             }
 
@@ -69,7 +72,7 @@ public class FileModel extends ApplicationModel {
         modelOfTheList.clear();
     }
 
-    //Will work for *NIX only
+    // Will work for *NIX only
     void setPath() {
 
         File forAnalysis = new File(getApplication().getFileModel().path + File.separator + getApplication().getFileModel().modelOfTheList.get(getApplication().getFileModel().selectedIndex));
@@ -89,7 +92,7 @@ public class FileModel extends ApplicationModel {
                 return;
             } else
                 getApplication().getFileModel().path = getApplication().getFileModel().path.substring(0, decPosition);
-                return;
+            return;
         }
 
         if (forAnalysis.isFile()) {
@@ -111,4 +114,5 @@ public class FileModel extends ApplicationModel {
         }
 
     }
+
 }

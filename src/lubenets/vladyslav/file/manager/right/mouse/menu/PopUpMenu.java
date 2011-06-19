@@ -2,97 +2,99 @@ package lubenets.vladyslav.file.manager.right.mouse.menu;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.Action;
 import javax.swing.AbstractAction;
-import javax.swing.JPopupMenu;
+import javax.swing.Action;
 
-import lubenets.vladyslav.file.manager.controller.GUICreatorImpl;
+import lubenets.vladyslav.file.manager.main.ViewModel;
 
-public class PopUpMenu {
+
+public class PopUpMenu extends Cmd {
 
     public String strAction;
     Invoker objInvoker;
-
+    private ViewModel localeViewModel;
+    
     @SuppressWarnings("serial")
-    public void activate() {
+    public void activate(ViewModel viewModel) {
 
+        this.localeViewModel = viewModel;
         objInvoker = new Invoker();
 
 //        GUICreatorImpl.menu = new JPopupMenu();
 
-        Action openWith = new AbstractAction(GUICreatorImpl.ACTION_OPEN_WITH) {
+        Action openWith = new AbstractAction(ACTION_OPEN_WITH) {
 
             public void actionPerformed(ActionEvent e) {
-                strAction = GUICreatorImpl.ACTION_OPEN_WITH;
+                strAction = ACTION_OPEN_WITH;
                 executeCommand(strAction);
             }
 
         };
 
-        Action copy = new AbstractAction(GUICreatorImpl.COPY) {
+        Action copy = new AbstractAction(COPY) {
 
             public void actionPerformed(ActionEvent e) {
-                strAction = GUICreatorImpl.COPY;
+                strAction = COPY;
                 executeCommand(strAction);            }
         };
 
-        Action cut = new AbstractAction(GUICreatorImpl.CUT) {
+        Action cut = new AbstractAction(CUT) {
 
             public void actionPerformed(ActionEvent e) {
-                strAction = GUICreatorImpl.CUT;
+                strAction = CUT;
                 executeCommand(strAction);            }
         };
 
-        Action paste = new AbstractAction(GUICreatorImpl.PASTE) {
+        Action paste = new AbstractAction(PASTE) {
 
             public void actionPerformed(ActionEvent e) {
-                strAction = GUICreatorImpl.PASTE;
+                strAction = PASTE;
                 executeCommand(strAction);            }
         };
 
-        Action rename = new AbstractAction(GUICreatorImpl.RENAME) {
+        Action rename = new AbstractAction(RENAME) {
 
             public void actionPerformed(ActionEvent e) {
-                strAction = GUICreatorImpl.RENAME;
+                strAction = RENAME;
                 executeCommand(strAction);            }
         };
 
-        Action delete = new AbstractAction(GUICreatorImpl.DELETE) {
+        Action delete = new AbstractAction(DELETE) {
 
             public void actionPerformed(ActionEvent e) {
-                strAction = GUICreatorImpl.DELETE;
+                strAction = DELETE;
                 executeCommand(strAction);            }
         };
 
-        Action properties = new AbstractAction(GUICreatorImpl.PROPERTIES) {
+        Action properties = new AbstractAction(PROPERTIES) {
 
             public void actionPerformed(ActionEvent e) {
-                strAction = GUICreatorImpl.PROPERTIES;
+                strAction = PROPERTIES;
                 executeCommand(strAction);            }
         };
 
-        GUICreatorImpl.jList.getActionMap().put(GUICreatorImpl.ACTION_OPEN_WITH, openWith);
-        GUICreatorImpl.menu.add(openWith);
-        GUICreatorImpl.jList.getActionMap().put(GUICreatorImpl.COPY, copy);
-        GUICreatorImpl.menu.add(copy);
-        GUICreatorImpl.jList.getActionMap().put(GUICreatorImpl.CUT, cut);
-        GUICreatorImpl.menu.add(cut);
-        GUICreatorImpl.jList.getActionMap().put(GUICreatorImpl.RENAME, rename);
-        GUICreatorImpl.menu.add(rename);
-        GUICreatorImpl.jList.getActionMap().put(GUICreatorImpl.PASTE, paste);
-        GUICreatorImpl.menu.add(paste);
-        GUICreatorImpl.jList.getActionMap().put(GUICreatorImpl.DELETE, delete);
-        GUICreatorImpl.menu.add(delete);
-        GUICreatorImpl.jList.getActionMap().put(GUICreatorImpl.PROPERTIES, properties);
-        GUICreatorImpl.menu.add(properties);
+        viewModel.jList.getActionMap().put(ACTION_OPEN_WITH, openWith);
+        viewModel.menu.add(openWith);
+        viewModel.jList.getActionMap().put(COPY, copy);
+        viewModel.menu.add(copy);
+        viewModel.jList.getActionMap().put(CUT, cut);
+        viewModel.menu.add(cut);
+        viewModel.jList.getActionMap().put(RENAME, rename);
+        viewModel.menu.add(rename);
+        viewModel.jList.getActionMap().put(PASTE, paste);
+        viewModel.menu.add(paste);
+        viewModel.jList.getActionMap().put(DELETE, delete);
+        viewModel.menu.add(delete);
+        viewModel.jList.getActionMap().put(PROPERTIES, properties);
+        viewModel.menu.add(properties);
 
     }
 
     public void executeCommand(String strAction) {
 
         if (strAction != null) {
-            Command executingCommand = objInvoker.getCommand(strAction);
-            executingCommand.execute();
+            Cmd executingCommand = objInvoker.getCommand(strAction);
+            executingCommand.execute(localeViewModel);
         }
     }
 
