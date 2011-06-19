@@ -23,6 +23,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import lubenets.vladyslav.file.manager.file.filter.FileFilter;
 import lubenets.vladyslav.file.manager.right.mouse.menu.PopUpMenu;
 
 public class ViewModel extends ApplicationModel implements ListSelectionListener {
@@ -30,12 +31,12 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
     public JList jList;
     JScrollPane jscrlp;
     JButton jBtnBye;
-    JTextField jFilter;
+    public JTextField jFilter;
     public JPopupMenu menu;
     JPopupMenu jpu;
     JFrame jFrm;
     PopUpMenu pom;
-    DefaultListModel lm;
+    public DefaultListModel lm;
 
     public boolean exitFlag;
     public boolean doubleClick;
@@ -148,8 +149,8 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
             }
 
             public void warn() {
-//                FileFilter ff = new FileFilter();
-//                ff.filterThis();
+                FileFilter ff = new FileFilter();
+                ff.filterThis(getApplication().getViewModel());
             }
         });
 
