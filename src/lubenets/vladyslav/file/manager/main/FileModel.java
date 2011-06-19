@@ -96,7 +96,10 @@ public class FileModel extends ApplicationModel {
         }
 
         if (forAnalysis.isFile()) {
+            getApplication().getFileOperationModel().openWithCommand();
+            return;
         }
+        
         if (forAnalysis.isDirectory()) {
             if (getApplication().getFileModel().path == null) {
                 getApplication().getFileModel().path = getApplication().getFileModel().modelOfTheList.get(getApplication().getFileModel().selectedIndex);

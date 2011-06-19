@@ -14,7 +14,7 @@ public class SettingsModel extends ApplicationModel {
     private static final long serialVersionUID = 1L;
     public final String FILE_ASSOSIATION_CFG = "ucf";
     Properties defaultProps = new Properties();
-    Properties applicationProps;
+    Properties applicationProps = new Properties();
 
     public SettingsModel(Application application) {
         super(application);
@@ -22,10 +22,13 @@ public class SettingsModel extends ApplicationModel {
     }
 
     public String getLastCommand(String fileType) {
+        if (applicationProps!=null) {
         if (applicationProps.containsKey(fileType)) {
             return applicationProps.getProperty(fileType);
         } else
             return null;
+        }
+        return null;
     }
 
     public void setLastCommand(String fileType, String commandForFileOpenning) {

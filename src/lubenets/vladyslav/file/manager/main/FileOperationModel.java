@@ -21,12 +21,21 @@ public class FileOperationModel extends ApplicationModel {
         String value = (String) getApplication().getFileModel().modelOfTheList.get(getApplication().getFileModel().selectedIndex);
 
         File fileType = new File(getApplication().getFileModel().path + File.separator + value);
+        if (getApplication().getFileModel().path == null) {
+            fileType = new File(value);
+            getApplication().getFileModel().path = value;
+        }
         if (fileType.isFile()) {
             String fileToOpen = getApplication().getFileModel().path + File.separator + value;
             openThis(fileToOpen, value);
-        } else
-            getApplication().getFileModel().displayFilesFromAPath();
+        } else {
+            if (getApplication().getFileModel().path.equals(File.separator)) {
+                getApplication().getFileModel().path = getApplication().getFileModel().path + value;
+            } else
+                getApplication().getFileModel().path = getApplication().getFileModel().path + File.separator + value;
 
+            getApplication().getFileModel().displayFilesFromAPath();
+        }
     }
 
     void openThis(String fileToOpen, Object value) {
@@ -152,29 +161,34 @@ public class FileOperationModel extends ApplicationModel {
             removeFilesP(toDelete);
         }
         getApplication().getFileModel().displayFilesFromAPath();
-    
+
     }
-    
+
     void copingFilesP(String source, String destination) {
         File dir = new File(source);
-        if (!dir.mkdir()) {
-            getApplication().getController().showDialog("Can not create a directory!");
-        }
+        if (dir.isDirectory()) {
+            if (!dir.mkdir()) {
+                getApplication().getController().showDialog("Can not create a directory!");
+            }
 
-        File[] fileList = dir.listFiles();
-        for (int i = 0; i < fileList.length; i++) {
-            if (fileList[i].isDirectory()) {
-                File newDir = new File(destination, fileList[i].getName());
-                if (!newDir.mkdir()) {
-                    getApplication().getController().showDialog("Can not create a directory!");
+            File[] fileList = dir.listFiles();
+            for (int i = 0; i < fileList.length; i++) {
+                if (fileList[i].isDirectory()) {
+                    File newDir = new File(destination, fileList[i].getName());
+                    if (!newDir.mkdir()) {
+                        getApplication().getController().showDialog("Can not create a directory!");
+                    }
+                    copingFilesP(fileList[i].getAbsolutePath(), newDir.getAbsolutePath());
+                } else {
+                    File newFile = new File(destination, fileList[i].getName());
+                    copyFileP(fileList[i].getAbsolutePath(), newFile);
                 }
-                copingFilesP(fileList[i].getAbsolutePath(), newDir.getAbsolutePath());
-            } else {
-                File newFile = new File(destination, fileList[i].getName());
-                copyFileP(fileList[i].getAbsolutePath(), newFile);
             }
         }
-
+        if (dir.isFile()) {
+            File newDir = new File(destination, source.substring(source.lastIndexOf(File.separator)+1));
+            copingFilesP(source.substring(source.lastIndexOf(File.separator)), newDir.getAbsolutePath());
+        }
     }
 
     void copyFileP(String absolutePath, File newFile) {
@@ -239,33 +253,30 @@ public class FileOperationModel extends ApplicationModel {
 
     }
 
-   
 //Rename command
     public void renameCommand() {
-        
+
         String value = (String) getApplication().getFileModel().modelOfTheList.get(getApplication().getFileModel().selectedIndex);
         File source = new File(getApplication().getFileModel().path + File.separator + value);
         File response = new File(getApplication().getFileModel().path + File.separator + JOptionPane.showInputDialog("Enter a new file name"));
         if (!source.renameTo(response)) {
             getApplication().getController().showDialog("I can`t rename this!");
         }
-        getApplication().getFileModel().displayFilesFromAPath();        
+        getApplication().getFileModel().displayFilesFromAPath();
     }
 
-
-    
-  //DeleteCommand    
+// DeleteCommand
     public void deleteCommand() {
-        String value = (String) getApplication().getFileModel().modelOfTheList.get(getApplication().getFileModel().selectedIndex);
+        String value = (String) getApplication().getViewModel().lm.get(getApplication().getFileModel().selectedIndex);
         File source = new File(getApplication().getFileModel().path + File.separator + value);
 //Ask for delete
         String response = getApplication().getController().askForDelete();
-        
-        if(response.equals("yes")) {
+
+        if (response.equals("yes")) {
             removeFilesD(source);
-            getApplication().getFileModel().displayFilesFromAPath();      
-        } 
-        
+            getApplication().getFileModel().displayFilesFromAPath();
+        }
+
     }
 
     public void removeFilesD(File source) {
@@ -288,13 +299,11 @@ public class FileOperationModel extends ApplicationModel {
         if (!source.delete()) {
             getApplication().getController().showDialog("Can not create a directory!");
         }
-    
+
     }
 
-    
 //Properties command    
     public void propertiesCommand() {
-
 
         String file = null;
         String fileSize = null;
@@ -350,9 +359,7 @@ public class FileOperationModel extends ApplicationModel {
         String[] infoForList = { file, fileSize, parent, hidden, dateOfTheLastModified, writeReadPermission };
 
         getApplication().getController().showProperties(infoForList);
-    
-    }
- 
 
-    
+    }
+
 }

@@ -161,6 +161,7 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
     }
 
     public void setListModel(Map<Integer, String> modelOfTheList) {
+        this.lm.clear();
         for (int i = 0; i < modelOfTheList.size(); i++) {
             this.lm.add(i, modelOfTheList.get(i));
         }

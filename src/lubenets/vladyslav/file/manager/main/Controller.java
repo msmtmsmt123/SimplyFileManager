@@ -17,10 +17,11 @@ public class Controller extends ApplicationModel {
 
     public void setDataToListModelAfterSelection(DefaultListModel lm) {
 
-        lm.clear();
-        getApplication().getFileModel().setPath();
-        getApplication().getFileModel().displayFilesFromAPath();
-        getApplication().getViewModel().jFrm.setTitle(getApplication().getFileModel().path);
+            lm.clear();
+            getApplication().getFileModel().setPath();
+            getApplication().getFileModel().displayFilesFromAPath();
+            getApplication().getViewModel().jFrm.setTitle(getApplication().getFileModel().path);
+
     }
 
     public void showDialog(String string) {
@@ -46,7 +47,7 @@ public class Controller extends ApplicationModel {
 
 //Properties command    
     public void showProperties(String[] infoForList) {
-        
+
         JList propertiesList;
         JScrollPane scrollPaneForList;
         propertiesList = new JList(infoForList);
@@ -58,7 +59,6 @@ public class Controller extends ApplicationModel {
 
         frameForProperties.getContentPane().add(scrollPaneForList);
         frameForProperties.setVisible(true);
- 
-        
+
     }
 }
