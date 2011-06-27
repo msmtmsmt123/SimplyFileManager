@@ -84,7 +84,14 @@ public class FileModel extends ApplicationModel {
                 forAnalysis = new File(getApplication().getFileModel().modelOfTheList.get(getApplication().getFileModel().selectedIndex));
             }
         }
+        
+        if (getApplication().getController().filterActivated) {
+            forAnalysis = new File(getApplication().getFileModel().path + File.separator + getApplication().getViewModel().lm.get(getApplication().getFileModel().selectedIndex));            
+            getApplication().getController().filterActivated = false;
+        }
 
+        getApplication().getViewModel().lm.clear();
+        
         if (forAnalysis.toString().endsWith("..")) {
             int decPosition = getApplication().getFileModel().path.lastIndexOf(File.separator);
             if (decPosition == 0) {

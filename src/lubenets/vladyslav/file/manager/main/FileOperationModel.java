@@ -186,7 +186,7 @@ public class FileOperationModel extends ApplicationModel {
             }
         }
         if (dir.isFile()) {
-            File newDir = new File(destination, source.substring(source.lastIndexOf(File.separator)+1));
+            File newDir = new File(destination, source.substring(source.lastIndexOf(File.separator) + 1));
             copingFilesP(source.substring(source.lastIndexOf(File.separator)), newDir.getAbsolutePath());
         }
     }
@@ -258,8 +258,13 @@ public class FileOperationModel extends ApplicationModel {
 
         String value = (String) getApplication().getFileModel().modelOfTheList.get(getApplication().getFileModel().selectedIndex);
         File source = new File(getApplication().getFileModel().path + File.separator + value);
-        File response = new File(getApplication().getFileModel().path + File.separator + JOptionPane.showInputDialog("Enter a new file name"));
-        if (!source.renameTo(response)) {
+        String returnedPath = JOptionPane.showInputDialog("Enter a new file name", value);
+        if (returnedPath == null) {
+            return;
+        }
+        File response = new File(getApplication().getFileModel().path + File.separator + returnedPath);
+        boolean result = source.renameTo(response);
+        if (!result || returnedPath == null) {
             getApplication().getController().showDialog("I can`t rename this!");
         }
         getApplication().getFileModel().displayFilesFromAPath();

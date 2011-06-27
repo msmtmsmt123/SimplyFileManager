@@ -9,6 +9,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 
 public class Controller extends ApplicationModel {
+    public boolean filterActivated;
+
     public Controller(Application application) {
         super(application);
         getApplication().getFileModel().firstRun();
@@ -17,7 +19,7 @@ public class Controller extends ApplicationModel {
 
     public void setDataToListModelAfterSelection(DefaultListModel lm) {
 
-            lm.clear();
+
             getApplication().getFileModel().setPath();
             getApplication().getFileModel().displayFilesFromAPath();
             getApplication().getViewModel().jFrm.setTitle(getApplication().getFileModel().path);

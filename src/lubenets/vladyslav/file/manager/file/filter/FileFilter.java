@@ -10,6 +10,7 @@ import lubenets.vladyslav.file.manager.main.ViewModel;
 public class FileFilter{
 
     public void filterThis(ViewModel viewModel) {
+        viewModel.getApplication().getController().filterActivated = true;
         String input = "";
 
         input = viewModel.jFilter.getText();
@@ -47,12 +48,14 @@ public class FileFilter{
 
         for (int i = 0; i < folders.size(); i++) {
             if (iteratorForFolders.hasNext()) {
+//                viewModel.getApplication().getFileModel().modelOfTheList.put(i, iteratorForFolders.next());
                 viewModel.getApplication().getViewModel().lm.addElement(iteratorForFolders.next());
             }
         }
 
         for (int i = 0; i < files.size(); i++) {
             if (iteratorForFiles.hasNext()) {
+//                viewModel.getApplication().getFileModel().modelOfTheList.put(i, iteratorForFiles.next());
                 viewModel.getApplication().getViewModel().lm.addElement(iteratorForFiles.next());
             }
         }
