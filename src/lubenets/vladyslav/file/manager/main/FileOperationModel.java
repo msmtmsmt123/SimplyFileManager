@@ -76,66 +76,6 @@ public class FileOperationModel extends ApplicationModel {
         getApplication().getFileModel().filesMustMove = false;
     }
 
-    void copingFiles(String source, String destination) {
-        File dir = new File(source);
-        if (!dir.mkdir()) {
-            getApplication().getController().showDialog("Can not create a directory!");
-        }
-
-        File[] fileList = dir.listFiles();
-        for (int i = 0; i < fileList.length; i++) {
-            if (fileList[i].isDirectory()) {
-                File newDir = new File(destination, fileList[i].getName());
-                if (!newDir.mkdir()) {
-                    getApplication().getController().showDialog("Can not create a directory!");
-                }
-                copingFiles(fileList[i].getAbsolutePath(), newDir.getAbsolutePath());
-            } else {
-                File newFile = new File(destination, fileList[i].getName());
-                copyFile(fileList[i].getAbsolutePath(), newFile);
-            }
-        }
-
-    }
-
-    void copyFile(String absolutePath, File newFile) {
-        File source = new File(absolutePath);
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            in = new FileInputStream(source);
-            out = new FileOutputStream(newFile);
-            int tempInt;
-            while ((tempInt = in.read()) != -1) {
-                out.write(tempInt);
-            }
-        } catch (FileNotFoundException e) {
-            getApplication().getController().showDialog("File not found!");
-            e.printStackTrace();
-        } catch (IOException e) {
-            getApplication().getController().showDialog("Input-output error!");
-            e.printStackTrace();
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    getApplication().getController().showDialog("Input-output error!");
-                    e.printStackTrace();
-                }
-            }
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    getApplication().getController().showDialog("Input-output error!");
-                    e.printStackTrace();
-                }
-            }
-
-        }
-
-    }
 
 //Cut command        
     public void cutCommand() {
@@ -167,15 +107,20 @@ public class FileOperationModel extends ApplicationModel {
     void copingFilesP(String source, String destination) {
         File dir = new File(source);
         if (dir.isDirectory()) {
-            if (!dir.mkdir()) {
+            dir = new File((destination + File.separator + source.substring(source.lastIndexOf(File.separator) + 1)));
+            boolean mkdr = dir.mkdir();
+            if (!mkdr) {
                 getApplication().getController().showDialog("Can not create a directory!");
             }
-
+            destination = dir.getAbsolutePath();
+            dir = new File(source);
+            
             File[] fileList = dir.listFiles();
             for (int i = 0; i < fileList.length; i++) {
                 if (fileList[i].isDirectory()) {
                     File newDir = new File(destination, fileList[i].getName());
-                    if (!newDir.mkdir()) {
+                    mkdr = newDir.mkdir();
+                    if (!mkdr) {
                         getApplication().getController().showDialog("Can not create a directory!");
                     }
                     copingFilesP(fileList[i].getAbsolutePath(), newDir.getAbsolutePath());
@@ -187,7 +132,7 @@ public class FileOperationModel extends ApplicationModel {
         }
         if (dir.isFile()) {
             File newDir = new File(destination, source.substring(source.lastIndexOf(File.separator) + 1));
-            copingFilesP(source.substring(source.lastIndexOf(File.separator)), newDir.getAbsolutePath());
+            copyFileP(source, newDir);
         }
     }
 
@@ -236,18 +181,18 @@ public class FileOperationModel extends ApplicationModel {
             for (int i = 0; i < fileList.length; i++) {
                 if (fileList[i].isDirectory()) {
                     removeFilesP(fileList[i]);
-                    if (!fileList[i].delete()) {
+                    if (!fileList[i].delete() && fileList[i].exists()) {
                         getApplication().getController().showDialog("Can not delete a file!");
                     }
                 } else {
-                    if (!fileList[i].delete()) {
+                    if (!fileList[i].delete() && fileList[i].exists()) {
                         getApplication().getController().showDialog("Can not delete a file!");
                     }
 
                 }
             }
         }
-        if (!source.delete()) {
+        if (!source.delete() && source.exists()) {
             getApplication().getController().showDialog("Can not create a directory!");
         }
 
@@ -286,22 +231,27 @@ public class FileOperationModel extends ApplicationModel {
 
     public void removeFilesD(File source) {
         File[] fileList = source.listFiles();
+        boolean check;
         if (fileList != null) {
             for (int i = 0; i < fileList.length; i++) {
-                if (fileList[i].isDirectory()) {
+                check = fileList[i].isDirectory();
+                if (check) {
                     removeFilesD(fileList[i]);
-                    if (!fileList[i].delete()) {
+                    check = fileList[i].delete();
+                    boolean exist = fileList[i].exists();
+                    if (!check && exist) {
                         getApplication().getController().showDialog("Can not delete a file!");
                     }
                 } else {
-                    if (!fileList[i].delete()) {
+                    check = fileList[i].delete();
+                    if (!check && fileList[i].exists()) {
                         getApplication().getController().showDialog("Can not delete a file!");
                     }
 
                 }
             }
         }
-        if (!source.delete()) {
+        if (!source.delete() && source.exists()) {
             getApplication().getController().showDialog("Can not create a directory!");
         }
 

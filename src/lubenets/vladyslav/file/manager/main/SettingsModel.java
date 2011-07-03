@@ -11,7 +11,6 @@ import java.util.Properties;
 
 public class SettingsModel extends ApplicationModel {
     public Map<String, String> fileAssosiationMap = new HashMap<String, String>();
-    private static final long serialVersionUID = 1L;
     public final String FILE_ASSOSIATION_CFG = "ucf";
     Properties defaultProps = new Properties();
     Properties applicationProps = new Properties();
