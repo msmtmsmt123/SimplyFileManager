@@ -37,7 +37,7 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
     JFrame jFrm;
     public PopUpMenu pom;
     public DefaultListModel lm;
-
+    FileFilter ff = new FileFilter();
     
     public boolean exitFlag;
     public boolean doubleClick;
@@ -136,8 +136,9 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
             }
 
             public void warn() {
-                FileFilter ff = new FileFilter();
+                getApplication().getController().filterActivated1 = true;
                 ff.filterThis(getApplication().getViewModel());
+                
             }
         });
 

@@ -28,18 +28,15 @@ public class FileModel extends ApplicationModel {
     }
 
     public void displayFilesFromAPath() {
+
         SortedSet<String> folders = new TreeSet<String>();
         SortedSet<String> files = new TreeSet<String>();
 
         if (getApplication().getFileModel().path != null) {
             File newPath = new File(getApplication().getFileModel().path);
-//            SortedSet<String> ss = new TreeSet<String>();
             String[] filesList = newPath.list();
             getApplication().getFileModel().clearListModel();
 
-//            for (int i = 0; i < filesList.length; i++) {
-//                if (filesList[i]!=null) ss.add(filesList[i]);
-//            };
             
             if (filesList == null) {
                 getApplication().getViewModel().lm.add(0, "..");

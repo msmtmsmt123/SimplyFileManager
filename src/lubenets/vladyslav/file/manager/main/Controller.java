@@ -11,6 +11,8 @@ import javax.swing.JScrollPane;
 
 public class Controller extends ApplicationModel {
     public boolean filterActivated;
+    public boolean filterActivated1;
+    public boolean popMenuActivated;
 
     public Controller(Application application) {
         super(application);
@@ -19,12 +21,14 @@ public class Controller extends ApplicationModel {
     }
 
     public void setDataToListModelAfterSelection(DefaultListModel lm) {
-
-
+        if (!getApplication().getController().filterActivated1) {
+            getApplication().getController().popMenuActivated = false;
             getApplication().getFileModel().setPath();
             getApplication().getFileModel().displayFilesFromAPath();
             getApplication().getViewModel().jFrm.setTitle(getApplication().getFileModel().path);
-
+        } else {
+            getApplication().getController().filterActivated1 = false;
+        }
     }
 
     public void showDialog(String string) {
@@ -32,15 +36,20 @@ public class Controller extends ApplicationModel {
     }
 
     public String showID(String string, String lastCommandForFileOpenning) {
-        
-        if(lastCommandForFileOpenning!=null) {
-            getApplication().getFileModel().displayFilesFromAPath();
+
+        if (lastCommandForFileOpenning != null) {
+            if (filterActivated == true) {
+                getApplication().getFileModel().displayFilesFromAPath();
+            }
             return JOptionPane.showInputDialog(string, lastCommandForFileOpenning);
         } else {
-            getApplication().getFileModel().displayFilesFromAPath();
+            if (filterActivated == true) {
+                getApplication().getFileModel().displayFilesFromAPath();
+            }
+
             return JOptionPane.showInputDialog(string);
         }
-        
+
     }
 
     public String askForDelete() {
@@ -74,7 +83,7 @@ public class Controller extends ApplicationModel {
     }
 
     public void setPopMenu() {
-
+        popMenuActivated  = true;
         File forAnalysis = new File(getApplication().getFileModel().path + File.separator + getApplication().getFileModel().modelOfTheList.get(getApplication().getFileModel().selectedIndex));
 
         File[] rootsList = File.listRoots();
@@ -84,23 +93,11 @@ public class Controller extends ApplicationModel {
                 forAnalysis = new File(getApplication().getFileModel().modelOfTheList.get(getApplication().getFileModel().selectedIndex));
             }
         }
-        
-        if (getApplication().getController().filterActivated) {
-            forAnalysis = new File(getApplication().getFileModel().path + File.separator + getApplication().getViewModel().lm.get(getApplication().getFileModel().selectedIndex));            
-            getApplication().getController().filterActivated = false;
-        }
 
-//        getApplication().getViewModel().lm.clear();
-        
-//        if (forAnalysis.toString().endsWith("..")) {
-//            int decPosition = getApplication().getFileModel().path.lastIndexOf(File.separator);
-//            if (decPosition == 0) {
-//                getApplication().getFileModel().path = File.separator;
-//                return;
-//            } else
-//                getApplication().getFileModel().path = getApplication().getFileModel().path.substring(0, decPosition);
-//            return;
-//        }
+        if (getApplication().getController().filterActivated) {
+            forAnalysis = new File(getApplication().getFileModel().path + File.separator + getApplication().getViewModel().lm.get(getApplication().getFileModel().selectedIndex));
+//            getApplication().getController().filterActivated = false;
+        }
 
         if (forAnalysis.isFile()) {
             getApplication().getViewModel().pom.showOpenWithForFolder(getApplication().getViewModel());
@@ -109,6 +106,6 @@ public class Controller extends ApplicationModel {
 
         if (forAnalysis.isDirectory()) {
             getApplication().getViewModel().pom.hideOpenWithForFolder(getApplication().getViewModel());
-        }        
+        }
     }
 }

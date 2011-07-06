@@ -39,20 +39,33 @@ public class FileOperationModel extends ApplicationModel {
         String fileType = null;
 
         fileType = value.toString().substring(value.toString().lastIndexOf('.') + 1, value.toString().length());
-        
+
         if (value.toString().lastIndexOf('.') == -1) {
-            fileType = "";    
+            fileType = "";
         }
 
+        String lastCommandForFileOpenning = getApplication().getSettingsModel().getLastCommand(fileType);
 
-            String lastCommandForFileOpenning = getApplication().getSettingsModel().getLastCommand(fileType);
-
+        if (!getApplication().getController().popMenuActivated) {
+            if (lastCommandForFileOpenning == null) {
                 response = getApplication().getController().showID("Enter a program name to open file", lastCommandForFileOpenning);
+
+                if (response == null || response.length() == 0) {
+                    return;
+                }
+                getApplication().getSettingsModel().setLastCommand(fileType, response);
+            } else {
+                response = lastCommandForFileOpenning;
+            }
+        } else {
+            getApplication().getController().popMenuActivated = false;
+            response = getApplication().getController().showID("Enter a program name to open file", lastCommandForFileOpenning);
 
             if (response == null || response.length() == 0) {
                 return;
             }
-        getApplication().getSettingsModel().setLastCommand(fileType, response);
+            getApplication().getSettingsModel().setLastCommand(fileType, response);
+        }
 
         String parameters[] = { response, fileToOpen };
 

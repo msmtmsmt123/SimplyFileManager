@@ -11,6 +11,8 @@ public class FileFilter {
 
     public void filterThis(ViewModel viewModel) {
         viewModel.getApplication().getController().filterActivated = true;
+        
+        
         String input = "";
 
         input = viewModel.jFilter.getText();
@@ -18,10 +20,9 @@ public class FileFilter {
         SortedSet<String> files = new TreeSet<String>();
 
         if (input.length() != 0) {
-//            File fileType = new File(viewModel.getApplication().getFileModel().path);
-            File[] newFileList = new File[viewModel.getApplication().getViewModel().lm.size()]; // = fileType.listFiles();
+            File[] newFileList = new File[viewModel.getApplication().getViewModel().lm.size()]; 
             for (int i = 0; i < viewModel.getApplication().getViewModel().lm.size(); i++) {
-                if (viewModel.getApplication().getViewModel().lm.getElementAt(i)==null) {
+                if (viewModel.getApplication().getViewModel().lm.getElementAt(i) == null) {
                     newFileList[i] = new File("null");
                     continue;
                 }
@@ -56,14 +57,12 @@ public class FileFilter {
 
         for (int i = 0; i < folders.size(); i++) {
             if (iteratorForFolders.hasNext()) {
-//                viewModel.getApplication().getFileModel().modelOfTheList.put(i, iteratorForFolders.next());
                 viewModel.getApplication().getViewModel().lm.addElement(iteratorForFolders.next());
             }
         }
 
         for (int i = 0; i < files.size(); i++) {
             if (iteratorForFiles.hasNext()) {
-//                viewModel.getApplication().getFileModel().modelOfTheList.put(i, iteratorForFiles.next());
                 viewModel.getApplication().getViewModel().lm.addElement(iteratorForFiles.next());
             }
         }
@@ -72,6 +71,7 @@ public class FileFilter {
         for (int i = 0; i < viewModel.getApplication().getViewModel().lm.size(); i++) {
             viewModel.getApplication().getFileModel().modelOfTheList.put(i, (String) viewModel.getApplication().getViewModel().lm.get(i));
         }
+        
     }
 
 }
