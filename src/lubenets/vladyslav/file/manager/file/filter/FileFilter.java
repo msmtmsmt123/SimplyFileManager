@@ -7,7 +7,7 @@ import java.util.TreeSet;
 
 import lubenets.vladyslav.file.manager.main.ViewModel;
 
-public class FileFilter{
+public class FileFilter {
 
     public void filterThis(ViewModel viewModel) {
         viewModel.getApplication().getController().filterActivated = true;
@@ -18,8 +18,16 @@ public class FileFilter{
         SortedSet<String> files = new TreeSet<String>();
 
         if (input.length() != 0) {
-            File fileType = new File(viewModel.getApplication().getFileModel().path);
-            File[] newFileList = fileType.listFiles();
+//            File fileType = new File(viewModel.getApplication().getFileModel().path);
+            File[] newFileList = new File[viewModel.getApplication().getViewModel().lm.size()]; // = fileType.listFiles();
+            for (int i = 0; i < viewModel.getApplication().getViewModel().lm.size(); i++) {
+                if (viewModel.getApplication().getViewModel().lm.getElementAt(i)==null) {
+                    newFileList[i] = new File("null");
+                    continue;
+                }
+                newFileList[i] = new File((String) viewModel.getApplication().getViewModel().lm.getElementAt(i));
+            }
+
             for (int k = 0; k < newFileList.length; k++) {
 
                 if (newFileList[k].isFile()) {
@@ -60,6 +68,10 @@ public class FileFilter{
             }
         }
 
+        viewModel.getApplication().getFileModel().modelOfTheList.clear();
+        for (int i = 0; i < viewModel.getApplication().getViewModel().lm.size(); i++) {
+            viewModel.getApplication().getFileModel().modelOfTheList.put(i, (String) viewModel.getApplication().getViewModel().lm.get(i));
+        }
     }
 
 }
