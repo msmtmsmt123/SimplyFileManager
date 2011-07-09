@@ -29,32 +29,36 @@ public class FileOperationModel extends ApplicationModel {
             String fileToOpen = getApplication().getFileModel().path + File.separator + value;
             openThis(fileToOpen, value);
         } else {
-            if (getApplication().getFileModel().path.equals(File.separator)) {
-                getApplication().getFileModel().path = getApplication().getFileModel().path + value;
-            } else
-                getApplication().getFileModel().path = getApplication().getFileModel().path + File.separator + value;
-
-            getApplication().getFileModel().displayFilesFromAPath();
+            getApplication().getViewModel().hideOpenForFolders();
+            
+//            if (getApplication().getFileModel().path.equals(File.separator)) {
+//                getApplication().getFileModel().path = getApplication().getFileModel().path + value;
+//            } else
+//                getApplication().getFileModel().path = getApplication().getFileModel().path + File.separator + value;
+//
+//            getApplication().getFileModel().displayFilesFromAPath();
         }
     }
 
     void openThis(String fileToOpen, Object value) {
         Runtime r = Runtime.getRuntime();
-        String response;
+        String response = null;
+        String fileType = null;
 
-        String fileType = value.toString().substring(value.toString().lastIndexOf('.') + 1, value.toString().length());
-
-        String lastCommandForFileOpenning = getApplication().getSettingsModel().getLastCommand(fileType);
-
-        if (lastCommandForFileOpenning == null) {
-            response = getApplication().getController().showID("Enter a program name to open file");
-        } else
-            response = lastCommandForFileOpenning;
-
-        if (response == null || response.length() == 0) {
-            return;
+        fileType = value.toString().substring(value.toString().lastIndexOf('.') + 1, value.toString().length());
+        
+        if (value.toString().lastIndexOf('.') == -1) {
+            fileType = "";    
         }
 
+
+            String lastCommandForFileOpenning = getApplication().getSettingsModel().getLastCommand(fileType);
+
+                response = getApplication().getController().showID("Enter a program name to open file", lastCommandForFileOpenning);
+
+            if (response == null || response.length() == 0) {
+                return;
+            }
         getApplication().getSettingsModel().setLastCommand(fileType, response);
 
         String parameters[] = { response, fileToOpen };
@@ -75,7 +79,6 @@ public class FileOperationModel extends ApplicationModel {
         getApplication().getFileModel().buffer = source.getAbsolutePath();
         getApplication().getFileModel().filesMustMove = false;
     }
-
 
 //Cut command        
     public void cutCommand() {
@@ -114,7 +117,7 @@ public class FileOperationModel extends ApplicationModel {
             }
             destination = dir.getAbsolutePath();
             dir = new File(source);
-            
+
             File[] fileList = dir.listFiles();
             for (int i = 0; i < fileList.length; i++) {
                 if (fileList[i].isDirectory()) {

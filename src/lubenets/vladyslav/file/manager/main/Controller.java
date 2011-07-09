@@ -30,8 +30,13 @@ public class Controller extends ApplicationModel {
         JOptionPane.showMessageDialog(getApplication().getViewModel().jFrm, string);
     }
 
-    public String showID(String string) {
-        return JOptionPane.showInputDialog(string);
+    public String showID(String string, String lastCommandForFileOpenning) {
+        if(lastCommandForFileOpenning!=null) {
+            return JOptionPane.showInputDialog(string, lastCommandForFileOpenning);
+        } else {
+            return JOptionPane.showInputDialog(string);
+        }
+        
     }
 
     public String askForDelete() {

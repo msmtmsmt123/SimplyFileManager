@@ -29,6 +29,7 @@ import lubenets.vladyslav.file.manager.right.mouse.menu.PopUpMenu;
 public class ViewModel extends ApplicationModel implements ListSelectionListener {
 
     public JList jList;
+    JMenuItem jmiOpen;
     JScrollPane jscrlp;
     JButton jBtnBye;
     public JTextField jFilter;
@@ -38,6 +39,7 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
     PopUpMenu pom;
     public DefaultListModel lm;
 
+    
     public boolean exitFlag;
     public boolean doubleClick;
     public Integer selectedIndex;
@@ -115,7 +117,7 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
 
         jFrm.setVisible(true);
 
-        final JMenuItem jmiOpen = new JMenuItem("Open with...");
+        jmiOpen = new JMenuItem("Open with...");
         final JMenuItem jmiCopy = new JMenuItem("Copy");
         final JMenuItem jmiCut = new JMenuItem("Cut");
         final JMenuItem jmiPaste = new JMenuItem("Paste");
@@ -172,6 +174,10 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
     }
 
     public void valueChanged(ListSelectionEvent e) {
+    }
+
+    public void hideOpenForFolders() {
+        jpu.remove(jmiOpen);
     }
 
 

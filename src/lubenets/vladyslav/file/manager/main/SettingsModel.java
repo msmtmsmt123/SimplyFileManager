@@ -13,7 +13,7 @@ public class SettingsModel extends ApplicationModel {
     public Map<String, String> fileAssosiationMap = new HashMap<String, String>();
     public final String FILE_ASSOSIATION_CFG = "ucf";
     Properties defaultProps = new Properties();
-    Properties applicationProps = new Properties();
+//    Properties applicationProps = new Properties();
 
     public SettingsModel(Application application) {
         super(application);
@@ -21,9 +21,9 @@ public class SettingsModel extends ApplicationModel {
     }
 
     public String getLastCommand(String fileType) {
-        if (applicationProps!=null) {
-        if (applicationProps.containsKey(fileType)) {
-            return applicationProps.getProperty(fileType);
+        if (defaultProps!=null) {
+        if (defaultProps.containsKey(fileType)) {
+            return defaultProps.getProperty(fileType);
         } else
             return null;
         }
@@ -31,7 +31,7 @@ public class SettingsModel extends ApplicationModel {
     }
 
     public void setLastCommand(String fileType, String commandForFileOpenning) {
-        applicationProps.setProperty(fileType, commandForFileOpenning);
+        defaultProps.setProperty(fileType, commandForFileOpenning);
         writeSettingsToTheFile();
     }
 
@@ -46,7 +46,7 @@ public class SettingsModel extends ApplicationModel {
                 in.close();
 
                 // create application properties with default
-                applicationProps = new Properties(defaultProps);
+//                applicationProps = new Properties(defaultProps);
 
             } catch (FileNotFoundException ex) {
                 getApplication().getController().showDialog("File not found!");
@@ -63,7 +63,7 @@ public class SettingsModel extends ApplicationModel {
         FileOutputStream out;
         try {
             out = new FileOutputStream(FILE_ASSOSIATION_CFG);
-            applicationProps.store(out, "Recorded");
+            defaultProps.store(out, "Recorded");
             out.close();
         } catch (FileNotFoundException ex) {
             getApplication().getController().showDialog("File not found!");
