@@ -34,9 +34,8 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
     JButton jBtnBye;
     public JTextField jFilter;
     public JPopupMenu menu;
-    JPopupMenu jpu;
     JFrame jFrm;
-    PopUpMenu pom;
+    public PopUpMenu pom;
     public DefaultListModel lm;
 
     
@@ -58,7 +57,6 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
 
         pom = new PopUpMenu();
         jFrm = new JFrame("Simple file manager");
-        jpu = new JPopupMenu();
         jFilter = new JTextField();
 
         jFrm.getContentPane().setLayout(new FlowLayout());
@@ -97,6 +95,8 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
                 getApplication().getFileModel().selectedIndex = jList.getSelectedIndex();
                 if (e.getClickCount() == 2) {
                     getApplication().getController().setDataToListModelAfterSelection(lm);
+                } else {
+                    getApplication().getController().setPopMenu();
                 }
             }
         });
@@ -117,21 +117,6 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
 
         jFrm.setVisible(true);
 
-        jmiOpen = new JMenuItem("Open with...");
-        final JMenuItem jmiCopy = new JMenuItem("Copy");
-        final JMenuItem jmiCut = new JMenuItem("Cut");
-        final JMenuItem jmiPaste = new JMenuItem("Paste");
-        final JMenuItem jmiRename = new JMenuItem("Rename");
-        final JMenuItem jmiDelete = new JMenuItem("Delete");
-        final JMenuItem jmiProperties = new JMenuItem("Properties");
-
-        jpu.add(jmiOpen);
-        jpu.add(jmiCopy);
-        jpu.add(jmiCut);
-        jpu.add(jmiPaste);
-        jpu.add(jmiRename);
-        jpu.add(jmiDelete);
-        jpu.add(jmiProperties);
 
         pom.activate(this);
     }
@@ -176,9 +161,6 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
     public void valueChanged(ListSelectionEvent e) {
     }
 
-    public void hideOpenForFolders() {
-        jpu.remove(jmiOpen);
-    }
 
 
 }

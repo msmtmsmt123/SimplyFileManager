@@ -104,6 +104,7 @@ public class FileModel extends ApplicationModel {
 
         if (forAnalysis.isFile()) {
             getApplication().getFileOperationModel().openWithCommand();
+            getApplication().getViewModel().pom.showOpenWithForFolder(getApplication().getViewModel());
             return;
         }
         

@@ -1,6 +1,7 @@
 package lubenets.vladyslav.file.manager.main;
 
 import java.awt.Dimension;
+import java.io.File;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
@@ -67,5 +68,44 @@ public class Controller extends ApplicationModel {
         frameForProperties.getContentPane().add(scrollPaneForList);
         frameForProperties.setVisible(true);
 
+    }
+
+    public void setPopMenu() {
+
+        File forAnalysis = new File(getApplication().getFileModel().path + File.separator + getApplication().getFileModel().modelOfTheList.get(getApplication().getFileModel().selectedIndex));
+
+        File[] rootsList = File.listRoots();
+
+        for (int i = 0; i < rootsList.length; i++) {
+            if (getApplication().getFileModel().modelOfTheList.get(getApplication().getFileModel().selectedIndex).toString().equals(rootsList[i].toString())) {
+                forAnalysis = new File(getApplication().getFileModel().modelOfTheList.get(getApplication().getFileModel().selectedIndex));
+            }
+        }
+        
+        if (getApplication().getController().filterActivated) {
+            forAnalysis = new File(getApplication().getFileModel().path + File.separator + getApplication().getViewModel().lm.get(getApplication().getFileModel().selectedIndex));            
+            getApplication().getController().filterActivated = false;
+        }
+
+//        getApplication().getViewModel().lm.clear();
+        
+//        if (forAnalysis.toString().endsWith("..")) {
+//            int decPosition = getApplication().getFileModel().path.lastIndexOf(File.separator);
+//            if (decPosition == 0) {
+//                getApplication().getFileModel().path = File.separator;
+//                return;
+//            } else
+//                getApplication().getFileModel().path = getApplication().getFileModel().path.substring(0, decPosition);
+//            return;
+//        }
+
+        if (forAnalysis.isFile()) {
+            getApplication().getViewModel().pom.showOpenWithForFolder(getApplication().getViewModel());
+            return;
+        }
+
+        if (forAnalysis.isDirectory()) {
+            getApplication().getViewModel().pom.hideOpenWithForFolder(getApplication().getViewModel());
+        }        
     }
 }

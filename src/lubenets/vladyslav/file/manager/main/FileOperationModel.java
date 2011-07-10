@@ -29,14 +29,7 @@ public class FileOperationModel extends ApplicationModel {
             String fileToOpen = getApplication().getFileModel().path + File.separator + value;
             openThis(fileToOpen, value);
         } else {
-            getApplication().getViewModel().hideOpenForFolders();
-            
-//            if (getApplication().getFileModel().path.equals(File.separator)) {
-//                getApplication().getFileModel().path = getApplication().getFileModel().path + value;
-//            } else
-//                getApplication().getFileModel().path = getApplication().getFileModel().path + File.separator + value;
-//
-//            getApplication().getFileModel().displayFilesFromAPath();
+
         }
     }
 
