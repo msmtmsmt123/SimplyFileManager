@@ -36,6 +36,11 @@ public class FileModel extends ApplicationModel {
             String[] filesList = newPath.list();
             getApplication().getFileModel().clearListModel();
 
+            if (filesList == null) {
+                getApplication().getViewModel().lm.add(0, "..");
+                return;
+            }
+
             for (int i = 0; i < filesList.length; i++) {
 
                 File isItFile = new File(getApplication().getFileModel().path + File.separator + filesList[i]);
@@ -103,8 +108,8 @@ public class FileModel extends ApplicationModel {
         }
 
         if (forAnalysis.isFile()) {
+//            getApplication().getViewModel().pom.showOpenWithForFolder(getApplication().getViewModel());
             getApplication().getFileOperationModel().openWithCommand();
-            getApplication().getViewModel().pom.showOpenWithForFolder(getApplication().getViewModel());
             return;
         }
         

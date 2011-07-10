@@ -32,9 +32,12 @@ public class Controller extends ApplicationModel {
     }
 
     public String showID(String string, String lastCommandForFileOpenning) {
+        
         if(lastCommandForFileOpenning!=null) {
+            getApplication().getFileModel().displayFilesFromAPath();
             return JOptionPane.showInputDialog(string, lastCommandForFileOpenning);
         } else {
+            getApplication().getFileModel().displayFilesFromAPath();
             return JOptionPane.showInputDialog(string);
         }
         
