@@ -3,10 +3,13 @@ package lubenets.vladyslav.file.manager.main;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Map;
 
 import javax.swing.DefaultListModel;
@@ -38,10 +41,12 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
     public PopUpMenu pom;
     public DefaultListModel lm;
     FileFilter ff = new FileFilter();
-    
+
     public boolean exitFlag;
     public boolean doubleClick;
     public Integer selectedIndex;
+    private Point framePosition = new Point();
+    private Dimension frameSize = new Dimension();
 
     public ViewModel(Application application) {
         super(application);
@@ -64,6 +69,29 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
         jFrm.setSize(1200, 700);
         jFrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        framePosition = getApplication().getSettingsModel().getFramePosition();
+        frameSize = getApplication().getSettingsModel().getFrameSize();
+        if (framePosition != null && frameSize != null) {
+            jFrm.setLocation(framePosition);
+            jFrm.setSize(frameSize);
+        }
+
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+
+            public void run() {
+                framePosition = jFrm.getLocation();
+                frameSize = jFrm.getSize();
+                getApplication().getSettingsModel().setFramePosition(framePosition);
+                getApplication().getSettingsModel().setFrameSize(frameSize);
+            }
+        }));
+        
+        
+        jFrm.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+            }
+        });
+
         jFilter.setText("Enter file name to filter");
         jFilter.selectAll();
 
@@ -73,7 +101,7 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
 
         jList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         jscrlp = new JScrollPane(jList);
-        jscrlp.setPreferredSize(new Dimension(400, 500));
+//        jscrlp.setPreferredSize(new Dimension(400, 500));
         jList.addListSelectionListener(this);
 
         jList.addMouseListener(new MouseAdapter() {
@@ -92,6 +120,7 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
             }
 
             public void mouseClicked(MouseEvent e) {
+
                 getApplication().getFileModel().selectedIndex = jList.getSelectedIndex();
                 if (e.getClickCount() == 2) {
                     getApplication().getController().setDataToListModelAfterSelection(lm);
@@ -117,7 +146,6 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
 
         jFrm.setVisible(true);
 
-
         pom.activate(this);
     }
 
@@ -138,7 +166,7 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
             public void warn() {
                 getApplication().getController().filterActivated1 = true;
                 ff.filterThis(getApplication().getViewModel());
-                
+
             }
         });
 
@@ -161,7 +189,5 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
 
     public void valueChanged(ListSelectionEvent e) {
     }
-
-
 
 }

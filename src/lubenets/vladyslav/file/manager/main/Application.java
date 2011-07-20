@@ -30,9 +30,9 @@ public class Application {
     }
 
     public void start() {
+        settingsModel = new SettingsModel(this);
         viewModel = new ViewModel(this);
         fileModel = new FileModel(this);
-        settingsModel = new SettingsModel(this);
         fileOperationModel = new FileOperationModel(this);
         controller = new Controller(this);
 

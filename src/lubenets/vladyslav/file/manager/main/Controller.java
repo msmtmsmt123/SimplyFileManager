@@ -27,7 +27,8 @@ public class Controller extends ApplicationModel {
             getApplication().getFileModel().displayFilesFromAPath();
             getApplication().getViewModel().jFrm.setTitle(getApplication().getFileModel().path);
         } else {
-            getApplication().getController().filterActivated1 = false;
+//            getApplication().getController().filterActivated1 = false;
+            return;
         }
     }
 
