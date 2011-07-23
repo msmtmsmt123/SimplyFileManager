@@ -38,7 +38,7 @@ public class SettingsModel extends ApplicationModel {
     public void setFramePosition(Point framePosition) {
         this.framePosition = framePosition;
         defaultProps.setProperty(keyFrmPositionX, String.valueOf(framePosition.x));
-        defaultProps.setProperty(keyFrmPositionX, String.valueOf(framePosition.x));
+        defaultProps.setProperty(keyFrmPositionY, String.valueOf(framePosition.y));
         writeSettingsToTheFile();
     }
 
