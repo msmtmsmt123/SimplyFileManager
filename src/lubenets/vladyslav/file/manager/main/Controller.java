@@ -11,8 +11,9 @@ import javax.swing.JScrollPane;
 
 public class Controller extends ApplicationModel {
     public boolean filterActivated;
-    public boolean filterActivated1;
+//    public boolean filterActivated1;
     public boolean popMenuActivated;
+    public String filterText;
 
     public Controller(Application application) {
         super(application);
@@ -21,11 +22,17 @@ public class Controller extends ApplicationModel {
     }
 
     public void setDataToListModelAfterSelection(DefaultListModel lm) {
-        if (!getApplication().getController().filterActivated1) {
-            getApplication().getController().popMenuActivated = false;
-            getApplication().getFileModel().setPath();
-            getApplication().getFileModel().displayFilesFromAPath();
-            getApplication().getViewModel().jFrm.setTitle(getApplication().getFileModel().path);
+        getApplication().getController().popMenuActivated = false;
+        getApplication().getFileModel().setPath();
+        if (getApplication().getController().filterText.length() != 0) {
+
+//            if (!getApplication().getController().filterText.equals("Enter file name to filter")) {
+                getApplication().getViewModel().jFilter.setText("Enter file name to filter");
+                getApplication().getViewModel().ff.filterThis(getApplication().getViewModel());
+//            } else {
+                getApplication().getFileModel().displayFilesFromAPath();
+                getApplication().getViewModel().jFrm.setTitle(getApplication().getFileModel().path);
+//            }
         } else {
 //            getApplication().getController().filterActivated1 = false;
             return;
@@ -84,7 +91,7 @@ public class Controller extends ApplicationModel {
     }
 
     public void setPopMenu() {
-        popMenuActivated  = true;
+        popMenuActivated = true;
         File forAnalysis = new File(getApplication().getFileModel().path + File.separator + getApplication().getFileModel().modelOfTheList.get(getApplication().getFileModel().selectedIndex));
 
         File[] rootsList = File.listRoots();

@@ -85,8 +85,7 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
                 getApplication().getSettingsModel().setFrameSize(frameSize);
             }
         }));
-        
-        
+
         jFrm.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
             }
@@ -123,6 +122,7 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
 
                 getApplication().getFileModel().selectedIndex = jList.getSelectedIndex();
                 if (e.getClickCount() == 2) {
+                    getApplication().getController().filterText = jFilter.getText();
                     getApplication().getController().setDataToListModelAfterSelection(lm);
                 } else {
                     getApplication().getController().setPopMenu();
@@ -164,7 +164,7 @@ public class ViewModel extends ApplicationModel implements ListSelectionListener
             }
 
             public void warn() {
-                getApplication().getController().filterActivated1 = true;
+//                getApplication().getController().filterActivated1 = true;
                 ff.filterThis(getApplication().getViewModel());
 
             }
