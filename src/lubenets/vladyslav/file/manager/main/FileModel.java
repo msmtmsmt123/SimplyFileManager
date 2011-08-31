@@ -33,9 +33,14 @@ public class FileModel extends ApplicationModel {
 
         if (getApplication().getFileModel().path != null) {
             File newPath = new File(getApplication().getFileModel().path);
+//            SortedSet<String> ss = new TreeSet<String>();
             String[] filesList = newPath.list();
             getApplication().getFileModel().clearListModel();
 
+//            for (int i = 0; i < filesList.length; i++) {
+//                if (filesList[i]!=null) ss.add(filesList[i]);
+//            };
+            
             if (filesList == null) {
                 getApplication().getViewModel().lm.add(0, "..");
                 return;
@@ -43,6 +48,10 @@ public class FileModel extends ApplicationModel {
 
             for (int i = 0; i < filesList.length; i++) {
 
+                if (filesList[i]==null) {
+                    continue;
+                }
+                
                 File isItFile = new File(getApplication().getFileModel().path + File.separator + filesList[i]);
 
                 if (isItFile.isFile()) {
@@ -63,9 +72,9 @@ public class FileModel extends ApplicationModel {
                 }
             }
 
-            for (int i = 0; i < getApplication().getFileModel().modelOfTheList.size() + files.size(); i++) {
+            for (int i = getApplication().getFileModel().modelOfTheList.size(); i < getApplication().getFileModel().modelOfTheList.size() + files.size(); i++) {
                 if (iteratorForFiles.hasNext()) {
-                    getApplication().getFileModel().modelOfTheList.put(getApplication().getFileModel().modelOfTheList.size() + i, iteratorForFiles.next());
+                    getApplication().getFileModel().modelOfTheList.put(getApplication().getFileModel().modelOfTheList.size(), iteratorForFiles.next());
                 }
             }
 
